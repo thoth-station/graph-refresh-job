@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: graph-refresh-buildconfig
+  template: graph-refresh-job-buildconfig
   thoth: 0.1.0
 metadata:
-  name: graph-refresh-buildconfig
+  name: graph-refresh-job-buildconfig
   annotations:
     description: This is Thoth Core - Graph Refresh Job BuildConfig
     openshift.io/display-name: "Thoth: Graph Refresh Job BuildConfig"
