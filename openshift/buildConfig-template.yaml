@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: thoth-graph-refresh-buildconfig
+  template: graph-refresh-buildconfig
   thoth: 0.1.0
 metadata:
-  name: thoth-graph-refresh-buildconfig
+  name: graph-refresh-buildconfig
   annotations:
     description: This is Thoth Core - Graph Refresh Job BuildConfig
     openshift.io/display-name: "Thoth: Graph Refresh Job BuildConfig"
-    version: 0.1.0
-    tags: poc,thoth,ai-stacks,graph
+    version: 0.2.0
+    tags: poc,thoth,ai-stacks,graph,jansugraph
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
     template.openshift.io/long-description: This template defines resources needed to deploy Thoth Graph Refresh Job as a Proof-of-Concept to OpenShift.
     template.openshift.io/provider-display-name: Red Hat, Inc.
@@ -18,8 +18,7 @@ objects:
 - kind: BuildConfig
   apiVersion: v1
   metadata:
-    name: graph-refresh
-    namespace: ${THOTH_FRONTEND_NAMESPACE}
+    name: graph-refresh-job
     labels:
       app: thoth-core
   spec:
@@ -44,12 +43,7 @@ objects:
       imageChange: {}
 
 parameters:
-- description: Name of the Thoth Frontend Namespace
-  displayName: Thoth Frontend Namespace
-  required: true
-  name: THOTH_FRONTEND_NAMESPACE
-
-- description: Name of the github repository for Thoth's Graph Refresh Job
+- description: Name of the GitHub repository for Thoth's Graph Refresh Job
   displayName: Git Repository
   required: true
   name: GITHUB_URL
