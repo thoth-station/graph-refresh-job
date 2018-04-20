@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: graph-refresh-cronjob
+  template: graph-refresh-job-cronjob
   thoth: 0.1.0
 metadata:
-  name: graph-refresh-job
+  name: graph-refresh-job-cronjob
   annotations:
     description: This is Thoth Core - Graph Refresh Job
     openshift.io/display-name: "Thoth: Graph Refresh Job"
@@ -53,7 +53,7 @@ objects:
   metadata:
     labels:
       app: thoth-core
-    name: graph-refresh
+    name: graph-refresh-job
   spec:
     name: latest
     lookupPolicy:

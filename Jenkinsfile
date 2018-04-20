@@ -65,7 +65,7 @@ pipeline {
         }
     }
     stages {
-        stage("Create BuildConfig") {
+        stage("Create Tempaltes") {
             steps {
                 script {
                     openshift.withCluster() {
@@ -75,7 +75,10 @@ pipeline {
                                 echo "BuildConfig Template created!"
                             }    
 
-                            // TODO create BC but dont init build                  
+                            if (!openshift.selector("template/graph-refresh-job-cronjob").exists()) {
+                                openshift.apply(readFile('openshift/cronJob-template.yaml'))
+                                echo "CronJob Template created!"
+                            }
                         }
                     }                    
                 }
@@ -113,6 +116,28 @@ pipeline {
                 }
             } // steps
         } // stage
+        stage("Setup ImageStream") {
+           steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject(CI_TEST_NAMESPACE) {
+                            if (!openshift.selector("imagestream/graph-refresh-job").exists()) {
+                                def model = openshift.process('graph-refresh-job-cronjob')
+
+                                echo "----"
+                                echo "${model}"
+                                echo "----"
+
+                                createdObjects = openshift.apply(model)
+
+                                echo "${createdObjects}"
+                                echo "----"
+                            }
+                        }
+                    }
+                }
+           }
+        }
         stage("Get Changelog") {
             steps {
                 node('master') {
