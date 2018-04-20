@@ -33,7 +33,7 @@ objects:
         template:
           spec:
             containers:
-            - image: graph-refresh-job
+            - image: graph-refresh
               name: graph-refresh
               env:
               - name: THOTH_JANUSGRAPH_HOST
