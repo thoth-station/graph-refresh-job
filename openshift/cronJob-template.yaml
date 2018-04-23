@@ -47,14 +47,3 @@ objects:
                   memory: "128Mi"
                   cpu: "250m"
             restartPolicy: OnFailure
-
-- kind: ImageStream
-  apiVersion: v1
-  metadata:
-    labels:
-      app: thoth-core
-    name: graph-refresh-job
-  spec:
-    name: latest
-    lookupPolicy:
-      local: true    
