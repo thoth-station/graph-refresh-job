@@ -18,11 +18,7 @@ objects:
 - kind: BuildConfig
   apiVersion: v1
   metadata:
-<<<<<<< HEAD
     name: graph-refresh-job
-=======
-    name: graph-refresh
->>>>>>> Namespace separation is handled by ansible
     labels:
       app: thoth-core
   spec:
@@ -52,7 +48,7 @@ objects:
       imageChange: {}
 
 parameters:
-- description: Name of the github repository for Thoth's Graph Refresh Job
+- description: Name of the GitHub repository for Thoth's Graph Refresh Job
   displayName: Git Repository
   required: true
   name: GITHUB_URL
