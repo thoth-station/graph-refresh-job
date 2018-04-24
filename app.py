@@ -117,7 +117,7 @@ def graph_refresh(graph_hosts=None, graph_port=None):
         for version in versions:
             packages += f"{package}=={version}\n"
 
-        for dependent_package, dependent_versions in graph.retrieve_dependent_packages().items():
+        for dependent_package, dependent_versions in graph.retrieve_dependent_packages(package).items():
             for dependent_version in versions:
                 packages += f"{dependent_package}=={dependent_version}\n"
 
