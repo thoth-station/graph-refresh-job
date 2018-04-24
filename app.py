@@ -27,7 +27,7 @@ _LOGGER = logging.getLogger('thoth.graph_refresh_job')
 
 KUBERNETES_API_URL = os.getenv('KUBERNETES_API_URL', 'https://kubernetes.default.svc.cluster.local')
 KUBERNETES_API_TOKEN = os.getenv('KUBERNETES_API_TOKEN') or _get_api_token()
-KUBERNETES_VERIFY_TLS = os.getenv('KUBERNETES_VERIFY_TLS', True)
+KUBERNETES_VERIFY_TLS = bool(int(os.getenv('KUBERNETES_VERIFY_TLS', "1")))
 THOTH_MIDDLETIER_NAMESPACE = os.environ['THOTH_MIDDLETIER_NAMESPACE']
 THOTH_SOLVER_OUTPUT = os.environ['THOTH_SOLVER_OUTPUT']
 
