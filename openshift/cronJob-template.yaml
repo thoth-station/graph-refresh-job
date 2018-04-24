@@ -40,6 +40,11 @@ objects:
                 value: 'janusgraph'
               - name: THOTH_JANUSGRAPH_PORT
                 value: '80'
+              - name: THOTH_MIDDLEEND_NAMESPACE
+                valueFrom:
+                  configMapKeyRef:
+                    key: middletier-namespace
+                    name: thoth
               resources:
                 requests:
                   memory: "32Mi"
