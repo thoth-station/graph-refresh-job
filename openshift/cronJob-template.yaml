@@ -36,6 +36,9 @@ objects:
             - image: graph-refresh-job
               name: graph-refresh
               env:
+              - name: 'THOTH_SOLVER_OUTPUT'
+                # TODO: we should utilize this with user-api
+                value: http://result-api/api/v1/solver-result
               - name: THOTH_JANUSGRAPH_HOST
                 value: 'janusgraph'
               - name: THOTH_JANUSGRAPH_PORT
