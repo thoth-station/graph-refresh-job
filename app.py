@@ -71,8 +71,6 @@ def _do_run_pod(template: dict) -> str:
     )
     _LOGGER.debug("Kubernetes master response (%d) from %r: %r",
                   response.status_code, KUBERNETES_API_URL, response.text)
-    if response.status_code / 100 != 2:
-        _LOGGER.error(response.text)
     response.raise_for_status()
 
     return response.json()['metadata']['name']
