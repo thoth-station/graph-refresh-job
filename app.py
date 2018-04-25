@@ -157,7 +157,7 @@ def main():
     _LOGGER.debug("Debug mode is on and hardcoded!")
 
     _LOGGER.info(
-        f"Version of thoth-storages: v{__version__}-git{__git_commit_id__}+storage-{__storage_version__}")
+        f"Version v{__version__}+{__git_commit_id__}.thoth_storages-{__storage_version__}")
 
     graph_refresh()
 
