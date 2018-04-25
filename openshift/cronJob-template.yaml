@@ -43,7 +43,7 @@ objects:
                 value: 'janusgraph'
               - name: THOTH_JANUSGRAPH_PORT
                 value: '80'
-              - name: THOTH_MIDDLEEND_NAMESPACE
+              - name: THOTH_MIDDLETIER_NAMESPACE
                 valueFrom:
                   configMapKeyRef:
                     key: middletier-namespace
