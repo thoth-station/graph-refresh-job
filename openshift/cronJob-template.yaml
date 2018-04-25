@@ -43,6 +43,10 @@ objects:
                 value: 'janusgraph'
               - name: THOTH_JANUSGRAPH_PORT
                 value: '80'
+              - name: KUBERNETES_API_URL
+                value: 'https://kubernetes.default.svc.cluster.local'
+              - name: KUBERNETES_VERIFY_TLS
+                value: "0"
               - name: THOTH_MIDDLETIER_NAMESPACE
                 valueFrom:
                   configMapKeyRef:
