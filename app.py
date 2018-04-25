@@ -22,9 +22,12 @@ import os
 import requests
 
 from thoth.common import init_logging
-from thoth.storages import __version__
+from thoth.storages import __version__ as __storage_version__
 from thoth.storages import GraphDatabase
 
+
+__version__ = '0.1.0'
+__git_commit_id__ = os.getenv('OPENSHIFT_BUILD_COMMIT', '')
 
 init_logging()
 
@@ -41,7 +44,8 @@ def _get_api_token():
 
 _LOGGER = logging.getLogger('thoth.graph_refresh_job')
 
-KUBERNETES_API_URL = os.getenv('KUBERNETES_API_URL', 'https://kubernetes.default.svc.cluster.local')
+KUBERNETES_API_URL = os.getenv(
+    'KUBERNETES_API_URL', 'https://kubernetes.default.svc.cluster.local')
 KUBERNETES_API_TOKEN = os.getenv('KUBERNETES_API_TOKEN') or _get_api_token()
 KUBERNETES_VERIFY_TLS = bool(int(os.getenv('KUBERNETES_VERIFY_TLS', "1")))
 THOTH_MIDDLETIER_NAMESPACE = os.environ['THOTH_MIDDLETIER_NAMESPACE']
@@ -58,8 +62,10 @@ SOLVERS = frozenset({
 def _do_run_pod(template: dict) -> str:
     """Run defined template in Kubernetes."""
     # We don't care about secret as we run inside the cluster. All builds should hard-code it to secret.
-    endpoint = "{}/api/v1/namespaces/{}/pods".format(KUBERNETES_API_URL, THOTH_MIDDLETIER_NAMESPACE)
-    _LOGGER.debug("Sending POST request to Kubernetes master %r", KUBERNETES_API_URL)
+    endpoint = "{}/api/v1/namespaces/{}/pods".format(
+        KUBERNETES_API_URL, THOTH_MIDDLETIER_NAMESPACE)
+    _LOGGER.debug("Sending POST request to Kubernetes master %r",
+                  KUBERNETES_API_URL)
     response = requests.post(
         endpoint,
         headers={
@@ -80,7 +86,8 @@ def _do_run_pod(template: dict) -> str:
 
 def run_solver(solver: str, packages: str) -> str:
     """Run a solver for the given packages."""
-    name_prefix = "{}-{}".format(solver, solver.rsplit('/', maxsplit=1)[-1]).replace(':', '-').replace('/', '-')
+    name_prefix = "{}-{}".format(solver, solver.rsplit('/',
+                                                       maxsplit=1)[-1]).replace(':', '-').replace('/', '-')
     template = {
         "apiVersion": "v1",
         "kind": "Pod",
@@ -110,8 +117,10 @@ def run_solver(solver: str, packages: str) -> str:
                     {"name": "THOTH_SOLVER", "value": str(solver)},
                     # No need to run transitive again
                     {"name": "THOTH_SOLVER_NO_TRANSITIVE", "value": "1"},
-                    {"name": "THOTH_SOLVER_PACKAGES", "value": str(packages.replace('\n', '\\n'))},
-                    {"name": "THOTH_SOLVER_DEBUG", "value": "1"},  # TODO: hardcoded now
+                    {"name": "THOTH_SOLVER_PACKAGES", "value": str(
+                        packages.replace('\n', '\\n'))},
+                    # TODO: hardcoded now
+                    {"name": "THOTH_SOLVER_DEBUG", "value": "1"},
                     {"name": "THOTH_SOLVER_OUTPUT", "value": THOTH_SOLVER_OUTPUT}
                 ]
                 # TODO resource limits and requests
@@ -119,7 +128,8 @@ def run_solver(solver: str, packages: str) -> str:
         }
     }
 
-    _LOGGER.debug("Requesting to run solver %r with payload %s", solver, template)
+    _LOGGER.debug("Requesting to run solver %r with payload %s",
+                  solver, template)
     return _do_run_pod(template)
 
 
@@ -139,12 +149,16 @@ def graph_refresh(graph_hosts=None, graph_port=None):
 
     for solver in SOLVERS:
         pod_id = run_solver(solver, packages)
-        _LOGGER.info("Scheduled solver %r for packages %r, pod id is %r", solver, packages, pod_id)
+        _LOGGER.info(
+            "Scheduled solver %r for packages %r, pod id is %r", solver, packages, pod_id)
 
 
 def main():
-    _LOGGER.debug("Debug mode is on")
-    _LOGGER.info("Version of thoth-storages: %r", __version__)
+    _LOGGER.debug("Debug mode is on and hardcoded!")
+
+    _LOGGER.info(
+        f"Version of thoth-storages: v{__version__}-git{__git_commit_id__}+storage-{__storage_version__}")
+
     graph_refresh()
 
 
