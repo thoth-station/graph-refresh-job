@@ -115,8 +115,8 @@ def run_solver(solver: str, packages: str) -> str:
                     {"name": "THOTH_SOLVER", "value": str(solver)},
                     # No need to run transitive again
                     {"name": "THOTH_SOLVER_NO_TRANSITIVE", "value": "1"},
-                    {"name": "THOTH_SOLVER_PACKAGES", "value": packages.replace('\n', '\\n')},
-                    {"name": "THOTH_SOLVER_DEBUG", "value": "1"},  # TODO: hardcoded now
+                    {"name": "THOTH_SOLVER_PACKAGES", "value": packages},
+                    {"name": "THOTH_LOG_SOLVER", "value": "DEBUG"},  # TODO: hardcoded now
                     {"name": "THOTH_SOLVER_OUTPUT", "value": THOTH_SOLVER_OUTPUT}
                 ]
                 # TODO resource limits and requests
