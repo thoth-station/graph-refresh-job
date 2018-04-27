@@ -135,10 +135,13 @@ def graph_refresh(graph_hosts=None, graph_port=None):
     packages = ""
     for package, versions in graph.retrieve_unsolved_pypi_packages().items():
         for version in versions:
+            _LOGGER.info(f"Adding new package {package} in version {version}")
             packages += f"{package}=={version}\n"
 
         for dependent_package, dependent_versions in graph.retrieve_dependent_packages(package).items():
             for dependent_version in versions:
+                _LOGGER.info(f"Adding dependency refresh  {dependent_version!r}=={dependent_version!r} "
+                             f"from {package}=={version}")
                 packages += f"{dependent_package}=={dependent_version}\n"
 
     for solver in SOLVERS:
