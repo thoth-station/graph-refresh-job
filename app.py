@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import logging
 import os
 
@@ -107,7 +108,7 @@ def run_solver(solver: str, packages: str) -> str:
                     "tcpSocket": {
                         "port": 80
                     },
-                    "initialDelaySeconds": 100,
+                    "initialDelaySeconds": datetime.timedelta(hours=2).total_seconds(),
                     "failureThreshold": 1,
                     "periodSeconds": 10
                 },
