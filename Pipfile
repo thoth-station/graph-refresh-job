@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 thoth-common = ">=0.0.3"
 requests = "*"
-thoth-storages = ">=0.0.19"
+thoth-storages = ">=0.0.26"
 
 [dev-packages]
 coala = "*"
