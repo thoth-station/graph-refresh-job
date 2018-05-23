@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-thoth-common = ">=0.0.3"
+thoth-common = ">=0.0.6"
 requests = "*"
 thoth-storages = ">=0.0.27"
 
