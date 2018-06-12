@@ -28,7 +28,7 @@ from thoth.storages import __version__ as __storage_version__
 from thoth.storages import GraphDatabase
 
 
-__version__ = '0.1.0'
+__version__ = '0.3.0'
 __git_commit_id__ = os.getenv('OPENSHIFT_BUILD_COMMIT', '')
 
 init_logging()

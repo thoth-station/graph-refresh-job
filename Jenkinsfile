@@ -8,7 +8,7 @@ STABLE_LABEL = "stable"
 tagMap = [:]
 
 // Initialize
-tagMap['graph-refresh-job'] = '0.1.0'
+tagMap['graph-refresh-job'] = '0.3.0'
 
 // IRC properties
 IRC_NICK = "sesheta"
