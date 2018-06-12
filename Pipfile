@@ -1,21 +1,18 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
-thoth-common = ">=0.0.3"
+thoth-common = "*"
 requests = "*"
-thoth-storages = ">=0.0.19"
-
+thoth-storages = "*"
 
 [dev-packages]
-
-
+coala = "*"
+pycodestylebear = "*"
+yamllintbear = "*"
+pydocstylebear = "*"
 
 [requires]
-
 python_version = "3.6"

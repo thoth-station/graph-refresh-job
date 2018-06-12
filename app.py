@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
+"""Refresh data stored in the graph database."""
 
 import datetime
 import logging
@@ -152,6 +153,7 @@ def graph_refresh(graph_hosts=None, graph_port=None):
 
 
 def main():
+    """Perform graph refresh job."""
     _LOGGER.debug("Debug mode is on and hardcoded!")
 
     _LOGGER.info(
