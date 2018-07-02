@@ -250,19 +250,19 @@
         },
         "thoth-common": {
             "hashes": [
-                "sha256:729d00c4e253858c07b2088b4eaf6455467636b18f8241535fd374481d5d78e4",
-                "sha256:a069378ba69a2d9036a336baae000f52281bf514414bf5d6fd5902e2a6aa808b"
+                "sha256:bfb63d5540e08d0720b746d10817850febc6ea21485ca1d5735baefbcbb5afd3",
+                "sha256:d77ffcde53e9e464bc94f0aec8ad7808ed7bc9ea35dc5103d56d778391997c7a"
             ],
             "index": "pypi",
-            "version": "==0.0.6"
+            "version": "==0.0.9"
         },
         "thoth-storages": {
             "hashes": [
-                "sha256:7c22ea563ca3679377a0d0d5ce31a03bba4d103040fa16677251f482f2cac545",
-                "sha256:c889eaf8cf98b21ab6bdf69d2c86b93efc105decdbf0e7f98db245d943f8d75d"
+                "sha256:551d2b0a6975be708ef61caf848b0a96ea915cc0689b6153101154aa8326bcf0",
+                "sha256:e2aef4fbaa98ed7df136a616a55dc53422006dfdc0b5a2b303113d4bccb076fd"
             ],
             "index": "pypi",
-            "version": "==0.0.29"
+            "version": "==0.0.33"
         },
         "tornado": {
             "hashes": [

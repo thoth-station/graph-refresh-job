@@ -8,7 +8,7 @@ metadata:
   annotations:
     description: This is Thoth Core - Graph Refresh Job
     openshift.io/display-name: "Thoth: Graph Refresh Job"
-    version: 0.3.0
+    version: 0.4.0
     tags: poc,thoth,ai-stacks,graph,janusgraph
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
     template.openshift.io/long-description: This template defines resources needed to deploy Thoth Graph Refresh Job as a Proof-of-Concept to OpenShift.

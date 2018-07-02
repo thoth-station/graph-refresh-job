@@ -8,7 +8,7 @@ metadata:
   annotations:
     description: This is Thoth Graph Refresh CronJob ImageStream, this template is meant to be used by Jenkins, but could also be used by humans...
     openshift.io/display-name: "Thoth: Graph Refresh Job"
-    version: 0.3.0
+    version: 0.4.0
     tags: poc,thoth,ai-stacks,graph
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
     template.openshift.io/long-description: This template defines resources needed to deploy Thoth Graph Refresh Job ImageStream as a Proof-of-Concept to OpenShift.

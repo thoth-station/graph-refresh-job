@@ -8,7 +8,7 @@ metadata:
   annotations:
     description: This is Thoth Core - Graph Refresh Job BuildConfig
     openshift.io/display-name: "Thoth: Graph Refresh Job BuildConfig"
-    version: 0.3.0
+    version: 0.4.0
     tags: poc,thoth,ai-stacks,graph,jansugraph
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
     template.openshift.io/long-description: This template defines resources needed to deploy Thoth Graph Refresh Job as a Proof-of-Concept to OpenShift.
@@ -24,10 +24,10 @@ objects:
   spec:
     resources:
       limits:
-        cpu: 2000m
+        cpu: 1
         memory: 768Mi
       requests:
-        cpu: 2000m
+        cpu: 1
         memory: 768Mi
     output:
       to:
