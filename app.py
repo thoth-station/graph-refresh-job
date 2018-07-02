@@ -24,6 +24,7 @@ import os
 import requests
 
 from thoth.common import init_logging
+from thoth.common import get_service_account_token
 from thoth.storages import __version__ as __storage_version__
 from thoth.storages import GraphDatabase
 
@@ -34,21 +35,10 @@ __git_commit_id__ = os.getenv('OPENSHIFT_BUILD_COMMIT', '')
 init_logging()
 
 
-def _get_api_token():
-    """Get token to Kubernetes master."""
-    try:
-        with open('/var/run/secrets/kubernetes.io/serviceaccount/token', 'r') as token_file:
-            return token_file.read()
-    except FileNotFoundError as exc:
-        raise FileNotFoundError("Unable to get service account token, please check that service has "
-                                "service account assigned with exposed token") from exc
-
-
 _LOGGER = logging.getLogger('thoth.graph_refresh_job')
 
-KUBERNETES_API_URL = os.getenv(
-    'KUBERNETES_API_URL', 'https://kubernetes.default.svc.cluster.local')
-KUBERNETES_API_TOKEN = os.getenv('KUBERNETES_API_TOKEN') or _get_api_token()
+KUBERNETES_API_URL = os.getenv('KUBERNETES_API_URL', 'https://kubernetes.default.svc.cluster.local')
+KUBERNETES_API_TOKEN = os.getenv('KUBERNETES_API_TOKEN') or get_service_account_token()
 KUBERNETES_VERIFY_TLS = bool(int(os.getenv('KUBERNETES_VERIFY_TLS', "1")))
 THOTH_MIDDLETIER_NAMESPACE = os.environ['THOTH_MIDDLETIER_NAMESPACE']
 THOTH_SOLVER_OUTPUT = os.environ['THOTH_SOLVER_OUTPUT']
