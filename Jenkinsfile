@@ -70,12 +70,12 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject(CI_TEST_NAMESPACE) {
-                            if (!openshift.selector("template/graph-refresh-job-buildconfig").exists()) {
+                            if (!openshift.selector("template/graph-refresh-buildconfig").exists()) {
                                 openshift.apply(readFile('openshift/buildConfig-template.yaml'))
                                 echo "BuildConfig Template created!"
                             }    
 
-                            if (!openshift.selector("template/graph-refresh-job-cronjob").exists()) {
+                            if (!openshift.selector("template/graph-refresh-cronjob").exists()) {
                                 openshift.apply(readFile('openshift/cronJob-template.yaml'))
                                 echo "CronJob Template created!"
                             }
