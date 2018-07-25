@@ -25,7 +25,7 @@ objects:
       component: graph-refresh
   spec:
     schedule: '*/30 * * * *'
-    suspend: ${THOTH_SUSPEND_JOB}
+    suspend: "${THOTH_SUSPEND_JOB}"
     concurrencyPolicy: Forbid
     successfulJobsHistoryLimit: 4
     failedJobsHistoryLimit: 4
