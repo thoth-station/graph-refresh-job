@@ -1,8 +1,5 @@
 apiVersion: v1
 kind: Template
-labels:
-  template: graph-refresh-cronjob
-  thoth: 0.1.0
 metadata:
   name: graph-refresh-cronjob
   annotations:
@@ -13,6 +10,10 @@ metadata:
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
     template.openshift.io/long-description: This template defines resources needed to deploy Thoth Graph Refresh Job as a Proof-of-Concept to OpenShift.
     template.openshift.io/provider-display-name: Red Hat, Inc.
+  labels:
+    template: graph-refresh-cronjob
+    app: thoth
+    component: graph-refresh
 
 objects:
 - kind: CronJob
@@ -20,10 +21,11 @@ objects:
   metadata:
     name: graph-refresh
     labels:
-      app: thoth-core
+      app: thoth
+      component: graph-refresh
   spec:
     schedule: '*/30 * * * *'
-    suspend: true
+    suspend: ${THOTH_SUSPEND_JOB}
     concurrencyPolicy: Forbid
     successfulJobsHistoryLimit: 4
     failedJobsHistoryLimit: 4
@@ -70,3 +72,10 @@ objects:
                   memory: "128Mi"
                   cpu: "250m"
             restartPolicy: OnFailure
+
+parameters:
+  - displayName: Suspend CronJob run
+    description: Suspend CronJob run
+    required: true
+    name: THOTH_SUSPEND_JOB
+    value: true
