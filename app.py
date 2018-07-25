@@ -119,7 +119,7 @@ def run_solver(solver: str, packages: str) -> str:
     return _do_run_pod(template)
 
 
-def graph_refresh(graph_hosts=None, graph_port=None):
+def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
     """Schedule refresh for packages that are not yet analyzed by solver."""
     graph = GraphDatabase(hosts=graph_hosts, port=graph_port)
     graph.connect()
@@ -135,6 +135,9 @@ def graph_refresh(graph_hosts=None, graph_port=None):
                 _LOGGER.info(f"Adding dependency refresh  {dependent_version!r}=={dependent_version!r} "
                              f"from {package}=={version}")
                 packages += f"{dependent_package}=={dependent_version}\n"
+
+    if not packages:
+        return
 
     for solver in SOLVERS:
         pod_id = run_solver(solver, packages)
