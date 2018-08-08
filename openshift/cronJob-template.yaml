@@ -24,7 +24,7 @@ objects:
       app: thoth
       component: graph-refresh
   spec:
-    schedule: '*/30 * * * *'
+    schedule: '0 */6 * * *'
     suspend: ${{THOTH_SUSPEND_JOB}}
     concurrencyPolicy: Forbid
     successfulJobsHistoryLimit: 4
