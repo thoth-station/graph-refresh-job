@@ -4,8 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-thoth-common = "*"
-requests = "*"
+thoth-common = {version = "*", extras = ["openshift"]}
 thoth-storages = "*"
 
 [dev-packages]
