@@ -32,6 +32,10 @@ objects:
     jobTemplate:
       spec:
         template:
+          metadata:
+            labels:
+              app: thoth
+              component: graph-refresh
           spec:
             serviceAccountName: analyzer
             containers:
