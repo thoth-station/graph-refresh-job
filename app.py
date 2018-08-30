@@ -66,7 +66,7 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
 
 def main():
     """Perform graph refresh job."""
-    _LOGGER.debug("Debug mode is on and hardcoded!")
+    _LOGGER.debug("Debug mode is on")
 
     _LOGGER.info(
         f"Version v{__version__}+{__git_commit_id__}.thoth_storages-{__storage_version__}")
