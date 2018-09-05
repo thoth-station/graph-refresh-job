@@ -5,7 +5,7 @@ metadata:
   annotations:
     description: This is Thoth Core - Graph Refresh Job BuildConfig
     openshift.io/display-name: "Thoth: Graph Refresh Job BuildConfig"
-    version: 0.4.0
+    version: 0.5.0
     tags: poc,thoth,ai-stacks,graph,jansugraph
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
     template.openshift.io/long-description: This template defines resources needed to deploy Thoth Graph Refresh Job as a Proof-of-Concept to OpenShift.
@@ -55,6 +55,10 @@ objects:
     - type: ConfigChange
     - type: ImageChange
       imageChange: {}
+    - type: Generic
+      generic:
+        secretReference:
+          name: zuul-incoming-webhook
 
 parameters:
 - description: Name of the GitHub repository for Thoth's Graph Refresh Job
