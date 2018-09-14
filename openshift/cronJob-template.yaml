@@ -5,10 +5,11 @@ metadata:
   annotations:
     description: This is Thoth Core - Graph Refresh Job
     openshift.io/display-name: "Thoth: Graph Refresh Job"
-    version: 0.4.0
+    version: 0.5.0
     tags: poc,thoth,ai-stacks,graph,janusgraph
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
-    template.openshift.io/long-description: This template defines resources needed to deploy Thoth Graph Refresh Job as a Proof-of-Concept to OpenShift.
+    template.openshift.io/long-description: >
+      This template defines resources needed to deploy Thoth Graph Refresh Job as a Proof-of-Concept to OpenShift.
     template.openshift.io/provider-display-name: Red Hat, Inc.
   labels:
     template: graph-refresh-cronjob
@@ -16,71 +17,71 @@ metadata:
     component: graph-refresh
 
 objects:
-- kind: CronJob
-  apiVersion: batch/v2alpha1
-  metadata:
-    name: graph-refresh
-    labels:
-      app: thoth
-      component: graph-refresh
-  spec:
-    schedule: '0 */6 * * *'
-    suspend: ${{THOTH_SUSPEND_JOB}}
-    concurrencyPolicy: Forbid
-    successfulJobsHistoryLimit: 4
-    failedJobsHistoryLimit: 4
-    jobTemplate:
-      spec:
-        template:
-          metadata:
-            labels:
-              app: thoth
-              component: graph-refresh
-          spec:
-            serviceAccountName: analyzer
-            containers:
-            - image: graph-refresh-job
-              name: graph-refresh
-              env:
-              - name: 'THOTH_SOLVER_OUTPUT'
-                # TODO: we should utilize this with user-api
-                value: http://result-api/api/v1/solver-result
-              - name: THOTH_JANUSGRAPH_HOST
-                value: 'janusgraph'
-              - name: THOTH_JANUSGRAPH_PORT
-                value: '80'
-              - name: KUBERNETES_API_URL
-                value: 'https://kubernetes.default.svc.cluster.local'
-              - name: KUBERNETES_VERIFY_TLS
-                value: "0"
-              - name: THOTH_MIDDLETIER_NAMESPACE
-                valueFrom:
-                  configMapKeyRef:
-                    key: middletier-namespace
-                    name: thoth
-              - name: THOTH_INFRA_NAMESPACE
-                valueFrom:
-                  configMapKeyRef:
-                    key: infra-namespace
-                    name: thoth
-              - name: RSYSLOG_HOST
-                valueFrom:
-                 configMapKeyRef:
-                   key: rsyslog-host
-                   name: thoth
-              - name: RSYSLOG_PORT
-                valueFrom:
-                 configMapKeyRef:
-                   key: rsyslog-port
-                   name: thoth
-              resources:
-                requests:
-                  memory: "128Mi"
-                  cpu: "250m"
-                limits:
-                  memory: "128Mi"
-                  cpu: "250m"
-            restartPolicy: OnFailure
+  - kind: CronJob
+    apiVersion: batch/v2alpha1
+    metadata:
+      name: graph-refresh
+      labels:
+        app: thoth
+        component: graph-refresh
+    spec:
+      schedule: '0 */6 * * *'
+      suspend: ${THOTH_SUSPEND_JOB}
+      concurrencyPolicy: Forbid
+      successfulJobsHistoryLimit: 2
+      failedJobsHistoryLimit: 4
+      jobTemplate:
+        spec:
+          template:
+            metadata:
+              labels:
+                app: thoth
+                component: graph-refresh
+            spec:
+              serviceAccountName: analyzer
+              containers:
+                - name: graph-refresh
+                  image: graph-refresh-job
+                  env:
+                    - name: 'THOTH_SOLVER_OUTPUT'
+                      # TODO: we should utilize this with user-api
+                      value: http://result-api/api/v1/solver-result
+                    - name: THOTH_JANUSGRAPH_HOST
+                      value: 'janusgraph'
+                    - name: THOTH_JANUSGRAPH_PORT
+                      value: '80'
+                    - name: KUBERNETES_API_URL
+                      value: 'https://kubernetes.default.svc.cluster.local'
+                    - name: KUBERNETES_VERIFY_TLS
+                      value: "0"
+                    - name: THOTH_MIDDLETIER_NAMESPACE
+                      valueFrom:
+                        configMapKeyRef:
+                          key: middletier-namespace
+                          name: thoth
+                    - name: THOTH_INFRA_NAMESPACE
+                      valueFrom:
+                        configMapKeyRef:
+                          key: infra-namespace
+                          name: thoth
+                    - name: RSYSLOG_HOST
+                      valueFrom:
+                      configMapKeyRef:
+                        key: rsyslog-host
+                        name: thoth
+                    - name: RSYSLOG_PORT
+                      valueFrom:
+                      configMapKeyRef:
+                        key: rsyslog-port
+                        name: thoth
+                  resources:
+                    requests:
+                      memory: "128Mi"
+                      cpu: "250m"
+                    limits:
+                      memory: "128Mi"
+                      cpu: "250m"
+              restartPolicy: OnFailure
 
 parameters:
   - displayName: Suspend CronJob run
