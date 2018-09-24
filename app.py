@@ -44,24 +44,27 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
     graph = GraphDatabase(hosts=graph_hosts, port=graph_port)
     graph.connect()
 
-    packages = ""
+    packages = []
     for package, versions in graph.retrieve_unsolved_pypi_packages().items():
         for version in versions:
             _LOGGER.info(f"Adding new package {package} in version {version}")
-            packages += f"{package}=={version}\n"
+            packages.append(f"{package}=={version}\n")
 
         for dependent_package, dependent_versions in graph.retrieve_dependent_packages(package).items():
             for dependent_version in versions:
                 _LOGGER.info(f"Adding dependency refresh  {dependent_version!r}=={dependent_version!r} "
                              f"from {package}=={version}")
-                packages += f"{dependent_package}=={dependent_version}\n"
+                packages.append(f"{dependent_package}=={dependent_version}\n")
 
     if not packages:
         return
 
     for solver in _OPENSHIFT.get_solver_names():
-        pod_id = _OPENSHIFT.run_solver(solver=solver, debug=_LOG_SOLVER, packages=packages, output=_SOLVER_OUTPUT)
-        _LOGGER.info("Scheduled solver %r for packages %r, pod id is %r", solver, packages, pod_id)
+        for package in packages:
+            pod_id = _OPENSHIFT.run_solver(
+                solver=solver, debug=_LOG_SOLVER, packages=package, output=_SOLVER_OUTPUT
+            )
+            _LOGGER.info("Scheduled solver %r for package %r, pod id is %r", solver, package, pod_id)
 
 
 def main():
