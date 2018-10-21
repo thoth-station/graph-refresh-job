@@ -3,13 +3,15 @@ kind: Template
 metadata:
   name: graph-refresh-cronjob
   annotations:
-    description: "Thoth: Graph Referesh Job"
+    description: >
+      This is Thoth Graph Refresh CronJob CronJob, this template is meant to be used by Bots,
+      but could also be used by humans...
     openshift.io/display-name: "Thoth: Graph Refresh Job"
-    version: 0.5.0
-    tags: thoth,ai-stacks,aistacks,graph,janusgraph
+    version: 0.6.0
+    tags: thoth,graph-refresh,ai-stacks,aistacks,graph
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
     template.openshift.io/long-description: >
-      This template defines resources needed to deploy Thoth's Graph Refresh Job on OpenShift.
+      This template defines resources needed to deploy Thoth Graph Refresh Job CronJob to OpenShift.
     template.openshift.io/provider-display-name: Red Hat, Inc.
   labels:
     template: graph-refresh-cronjob
@@ -32,7 +34,7 @@ objects:
         app: thoth
         component: graph-refresh
     spec:
-      schedule: '0 */6 * * *'
+      schedule: '0 * * * *'
       suspend: ${{THOTH_SUSPEND_JOB}}
       concurrencyPolicy: Forbid
       successfulJobsHistoryLimit: 4
@@ -77,6 +79,11 @@ objects:
                   configMapKeyRef:
                     key: rsyslog-port
                     name: thoth
+                - name: THOTH_METRICS_PUSHGATEWAY_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: thoth
+                      key: metrics-pushgateway-url
                 - name: SENTRY_DSN
                   valueFrom:
                     secretKeyRef:

@@ -3,12 +3,15 @@ kind: Template
 metadata:
   name: graph-refresh-imagestream
   annotations:
-    description: This is Thoth Graph Refresh CronJob ImageStream, this template is meant to be used by Jenkins, but could also be used by humans...
-    openshift.io/display-name: "Thoth: Graph Refresh Job"
-    version: 0.4.0
-    tags: poc,thoth,ai-stacks,graph
+    description: >
+      This is Thoth Graph Refresh CronJob ImageStream, this template is meant to be used by Bots,
+      but could also be used by humans...
+    openshift.io/display-name: "Thoth: Graph Refresh Job ImageStream"
+    version: 0.6.0
+    tags: thoth,graph-refresh,ai-stacks,aistacks,graph
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
-    template.openshift.io/long-description: This template defines resources needed to deploy Thoth Graph Refresh Job ImageStream as a Proof-of-Concept to OpenShift.
+    template.openshift.io/long-description: >
+      This template defines resources needed to deploy Thoth Graph Refresh Job ImageStream to OpenShift.
     template.openshift.io/provider-display-name: Red Hat, Inc.
   labels:
     template: graph-refresh-imagestream
