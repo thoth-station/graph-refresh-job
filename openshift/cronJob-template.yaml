@@ -52,43 +52,43 @@ objects:
                 - image: graph-refresh-job
                   name: graph-refresh
                   env:
-                  - name: 'THOTH_SOLVER_OUTPUT'
-                    # TODO: we should utilize this with user-api
-                    value: http://result-api/api/v1/solver-result
-                  - name: KUBERNETES_API_URL
-                    value: 'https://kubernetes.default.svc.cluster.local'
-                  - name: KUBERNETES_VERIFY_TLS
-                    value: "0"
-                  - name: THOTH_MIDDLETIER_NAMESPACE
-                    valueFrom:
+                    - name: 'THOTH_SOLVER_OUTPUT'
+                      # TODO: we should utilize this with user-api
+                      value: http://result-api/api/v1/solver-result
+                    - name: KUBERNETES_API_URL
+                      value: 'https://kubernetes.default.svc.cluster.local'
+                    - name: KUBERNETES_VERIFY_TLS
+                      value: "0"
+                    - name: THOTH_MIDDLETIER_NAMESPACE
+                      valueFrom:
+                        configMapKeyRef:
+                          key: middletier-namespace
+                          name: thoth
+                    - name: THOTH_INFRA_NAMESPACE
+                      valueFrom:
+                        configMapKeyRef:
+                          key: infra-namespace
+                          name: thoth
+                    - name: RSYSLOG_HOST
+                      valueFrom:
                       configMapKeyRef:
-                        key: middletier-namespace
+                        key: rsyslog-host
                         name: thoth
-                  - name: THOTH_INFRA_NAMESPACE
-                    valueFrom:
+                    - name: RSYSLOG_PORT
+                      valueFrom:
                       configMapKeyRef:
-                        key: infra-namespace
+                        key: rsyslog-port
                         name: thoth
-                  - name: RSYSLOG_HOST
-                    valueFrom:
-                    configMapKeyRef:
-                      key: rsyslog-host
-                      name: thoth
-                  - name: RSYSLOG_PORT
-                    valueFrom:
-                    configMapKeyRef:
-                      key: rsyslog-port
-                      name: thoth
-                  - name: THOTH_METRICS_PUSHGATEWAY_URL
-                    valueFrom:
-                      configMapKeyRef:
-                        name: thoth
-                        key: metrics-pushgateway-url
-                  - name: SENTRY_DSN
-                    valueFrom:
-                      secretKeyRef:
-                        name: thoth
-                        key: sentry-dsn
+                    - name: THOTH_METRICS_PUSHGATEWAY_URL
+                      valueFrom:
+                        configMapKeyRef:
+                          name: thoth
+                          key: metrics-pushgateway-url
+                    - name: SENTRY_DSN
+                      valueFrom:
+                        secretKeyRef:
+                          name: thoth
+                          key: sentry-dsn
                   resources:
                     requests:
                       memory: "128Mi"

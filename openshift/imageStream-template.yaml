@@ -30,4 +30,4 @@ objects:
     spec:
       name: latest
       lookupPolicy:
-        local: true    
+        local: true
