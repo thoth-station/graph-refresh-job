@@ -20,14 +20,14 @@ metadata:
     component: graph-refresh
 
 objects:
-- kind: ImageStream
-  apiVersion: v1
-  metadata:
-    labels:
-      app: thoth
-      component: graph-refresh
-    name: graph-refresh-job
-  spec:
-    name: latest
-    lookupPolicy:
-      local: true    
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      labels:
+        app: thoth
+        component: graph-refresh
+      name: graph-refresh-job
+    spec:
+      name: latest
+      lookupPolicy:
+        local: true    
