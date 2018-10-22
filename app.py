@@ -39,7 +39,6 @@ _LOGGER = logging.getLogger('thoth.graph_refresh_job')
 
 _SOLVER_OUTPUT = os.environ['THOTH_SOLVER_OUTPUT']
 _LOG_SOLVER = os.environ.get('THOTH_LOG_SOLVER') == 'DEBUG'
-_OPENSHIFT = OpenShift()
 
 _THOTH_METRICS_PUSHGATEWAY_URL = os.getenv('THOTH_METRICS_PUSHGATEWAY_URL')
 _METRIC_RUNTIME = Gauge(
@@ -76,6 +75,8 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
 
     if not packages:
         return
+
+    _OPENSHIFT = OpenShift()
 
     for solver in _OPENSHIFT.get_solver_names():
         for package in packages:
