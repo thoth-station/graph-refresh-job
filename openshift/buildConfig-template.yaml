@@ -3,12 +3,15 @@ kind: Template
 metadata:
   name: graph-refresh-buildconfig
   annotations:
-    description: This is Thoth Core - Graph Refresh Job BuildConfig
+    description: >
+      This is Thoth Graph Refresh CronJob BuildConfig, this template is meant to be used by Bots,
+      but could also be used by humans...
     openshift.io/display-name: "Thoth: Graph Refresh Job BuildConfig"
-    version: 0.5.0
-    tags: poc,thoth,ai-stacks,graph,jansugraph
+    version: 0.6.0
+    tags: thoth,graph-refresh,ai-stacks,aistacks,graph
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
-    template.openshift.io/long-description: This template defines resources needed to deploy Thoth Graph Refresh Job as a Proof-of-Concept to OpenShift.
+    template.openshift.io/long-description: >
+      This template defines resources needed to deploy Thoth Graph Refresh Job BuildConfig to OpenShift.
     template.openshift.io/provider-display-name: Red Hat, Inc.
   labels:
     template: graph-refresh-buildconfig
@@ -16,65 +19,65 @@ metadata:
     component: configmap
 
 objects:
-- kind: BuildConfig
-  apiVersion: v1
-  metadata:
-    name: graph-refresh-job
-    labels:
-      app: thoth
-      component: configmap
-  spec:
-    resources:
-      limits:
-        cpu: 1
-        memory: 768Mi
-      requests:
-        cpu: 1
-        memory: 768Mi
-    output:
-      to:
-        kind: ImageStreamTag
-        name: "graph-refresh-job:${IMAGE_STREAM_TAG}"
-    source:
-      type: Git
-      git:
-        uri: ${GITHUB_URL}
-        ref: ${GITHUB_REF}
-    strategy:
-      type: Source
-      sourceStrategy:
-        from:
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: graph-refresh-job
+      labels:
+        app: thoth
+        component: configmap
+    spec:
+      resources:
+        limits:
+          cpu: 1
+          memory: 768Mi
+        requests:
+          cpu: 1
+          memory: 768Mi
+      output:
+        to:
           kind: ImageStreamTag
-          name: python-36-centos7:latest
-        env:
-          - name: ENABLE_PIPENV
-            value: '1'
-          - name: UPGRADE_PIP_TO_LATEST
-            value: ''
-    triggers:
-    - type: ConfigChange
-    - type: ImageChange
-      imageChange: {}
-    - type: Generic
-      generic:
-        secretReference:
-          name: zuul-incoming-webhook
+          name: "graph-refresh-job:${IMAGE_STREAM_TAG}"
+      source:
+        type: Git
+        git:
+          uri: ${GITHUB_URL}
+          ref: ${GITHUB_REF}
+      strategy:
+        type: Source
+        sourceStrategy:
+          from:
+            kind: ImageStreamTag
+            name: python-36-centos7:latest
+          env:
+            - name: ENABLE_PIPENV
+              value: '1'
+            - name: UPGRADE_PIP_TO_LATEST
+              value: ''
+      triggers:
+        - type: ConfigChange
+        - type: ImageChange
+          imageChange: {}
+        - type: Generic
+          generic:
+            secretReference:
+              name: zuul-incoming-webhook
 
 parameters:
-- description: Name of the GitHub repository for Thoth's Graph Refresh Job
-  displayName: Git Repository
-  required: true
-  name: GITHUB_URL
-  value: 'https://github.com/thoth-station/graph-refresh-job'
+  - description: Name of the GitHub repository for Thoth's Graph Refresh Job
+    displayName: Git Repository
+    required: true
+    name: GITHUB_URL
+    value: 'https://github.com/thoth-station/graph-refresh-job'
 
-- description: Git reference to be used for Thoth's Package Releases Job
-  displayName: Git Reference
-  required: true
-  name: GITHUB_REF
-  value: 'master'
+  - description: Git reference to be used for Thoth's Package Releases Job
+    displayName: Git Reference
+    required: true
+    name: GITHUB_REF
+    value: 'master'
 
-- description: Tag of the output ImageStream the resulting container image should go to
-  displayName: ImageStream Tag
-  required: true
-  name: IMAGE_STREAM_TAG
-  value: 'latest'
+  - description: Tag of the output ImageStream the resulting container image should go to
+    displayName: ImageStream Tag
+    required: true
+    name: IMAGE_STREAM_TAG
+    value: 'latest'

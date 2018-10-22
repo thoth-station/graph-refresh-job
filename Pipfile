@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 thoth-common = {version = "*", extras = ["openshift"]}
 thoth-storages = "*"
+prometheus-client = "*"
 
 [dev-packages]
 coala = "*"

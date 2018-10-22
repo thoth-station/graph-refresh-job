@@ -1,7 +1,8 @@
 [all]
 bears = LineCountBear, FilenameBear
-files = **.py, **.yml, **.rst
-ignore = **/__pycache__/**, **/__pycache__, __pycache__, __pycache__/**, **/*.pyc, *.pyc
+files = **.py, **.yaml, **.rst, **.md
+file_naming_convention = camel
+ignore = **/__pycache__/**, **/__pycache__, __pycache__, __pycache__/**, **/*.pyc, *.pyc, .github/**
 max_lines_per_file = 1000
 
 [all.python]
@@ -10,8 +11,15 @@ files = **.py
 language = Python
 editor = vim
 max_line_length = 120
+ignore = setup.py
 
 [all.yaml]
 bears = YAMLLintBear
-ignore = .travis.yml
-files = **.yml
+files = **.yaml
+ignore = .zuul.yaml
+max_line_length = 120
+
+[zuul.yaml]
+bears = YAMLLintBear
+files = .zuul.yaml
+max_line_length = 180
