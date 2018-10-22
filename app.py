@@ -45,7 +45,10 @@ _METRIC_RUNTIME = Gauge(
     'graph_refresh_job_runtime_seconds', 'Runtime of graph refresh job in seconds.', [],
     registry=prometheus_registry)
 _METRIC_PACKAGES_ADDED = Counter(
-    'graph_refresh_job_packages_added_total', 'Number of packages added.', [],
+    'graph_refresh_job_packages_added_total', 'Number of new and unsolved package-version added.', [],
+    registry=prometheus_registry)
+_METRIC_DEPENDENT_PACKAGES_ADDED = Counter(
+    'graph_refresh_job_dependent_packages_added_total', 'Number package-version to be solved based on a package-version added.', [],
     registry=prometheus_registry)
 _METRIC_SOLVERS_SCHEDULED = Counter(
     'graph_refresh_job_solvers_scheduler_total', 'Number of Solvers scheduled.', ['solver'],
@@ -69,7 +72,7 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
             for dependent_version in versions:
                 _LOGGER.info(f"Adding dependency refresh {dependent_version!r}=={dependent_version!r} "
                              f"from {package}=={version}")
-                _METRIC_PACKAGES_ADDED.inc()
+                _METRIC_DEPENDENT_PACKAGES_ADDED.inc()
 
                 packages.append(f"{dependent_package}=={dependent_version}\n")
 
