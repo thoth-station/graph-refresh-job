@@ -48,7 +48,8 @@ _METRIC_PACKAGES_ADDED = Counter(
     'graph_refresh_job_packages_added_total', 'Number of new and unsolved package-version added.', [],
     registry=prometheus_registry)
 _METRIC_DEPENDENT_PACKAGES_ADDED = Counter(
-    'graph_refresh_job_dependent_packages_added_total', 'Number package-version to be solved based on a package-version added.', [],
+    'graph_refresh_job_dependent_packages_added_total',
+    'Number package-version to be solved based on a package-version added.', [],
     registry=prometheus_registry)
 _METRIC_SOLVERS_SCHEDULED = Counter(
     'graph_refresh_job_solvers_scheduler_total', 'Number of Solvers scheduled.', ['solver'],
