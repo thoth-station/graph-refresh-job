@@ -54,7 +54,8 @@ _METRIC_DEPENDENT_PACKAGES_ADDED = Counter(
 _METRIC_SOLVERS_SCHEDULED = Counter(
     'graph_refresh_job_solvers_scheduler_total', 'Number of Solvers scheduled.', ['solver'],
     registry=prometheus_registry)
-
+# If set to non-zero value, the graph-refresh will be scheduled for only first N unsolved package-versions.
+_THOTH_GRAPH_REFRESH_EAGER_STOP = int(os.getenv('THOTH_GRAPH_REFRESH_EAGER_STOP') or 0)
 
 def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
     """Schedule refresh for packages that are not yet analyzed by solver."""
@@ -80,15 +81,23 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
     if not packages:
         return
 
-    _OPENSHIFT = OpenShift()
-
-    for solver in _OPENSHIFT.get_solver_names():
+    count = 0
+    openshift = OpenShift()
+    for solver in openshift.get_solver_names():
         for package in packages:
-            pod_id = _OPENSHIFT.run_solver(
+            pod_id = openshift.run_solver(
                 solver=solver, debug=_LOG_SOLVER, packages=package, output=_SOLVER_OUTPUT
             )
             _LOGGER.info("Scheduled solver %r for package %r, pod id is %r", solver, package, pod_id)
             _METRIC_SOLVERS_SCHEDULED.labels(solver).inc()
+
+            count += 1
+            if _THOTH_GRAPH_REFRESH_EAGER_STOP and count >= _THOTH_GRAPH_REFRESH_EAGER_STOP:
+                _LOGGER.info(
+                    "Eager stop of scheduling new solver runs for unsolved package versions, packages scheduled: %d",
+                    count
+                )
+                return
 
 
 def main():
