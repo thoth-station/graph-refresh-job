@@ -57,6 +57,7 @@ _METRIC_SOLVERS_SCHEDULED = Counter(
 # If set to non-zero value, the graph-refresh will be scheduled for only first N unsolved package-versions.
 _THOTH_GRAPH_REFRESH_EAGER_STOP = int(os.getenv('THOTH_GRAPH_REFRESH_EAGER_STOP') or 0)
 
+
 def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
     """Schedule refresh for packages that are not yet analyzed by solver."""
     graph = GraphDatabase(hosts=graph_hosts, port=graph_port)
