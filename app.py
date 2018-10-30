@@ -69,7 +69,7 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
             _LOGGER.info(f"Adding new package {package} in version {version}")
             _METRIC_PACKAGES_ADDED.inc()
 
-            packages.append(f"{package}=={version}\n")
+            packages.append(f"{package}=={version}")
 
         for dependent_package, dependent_versions in graph.retrieve_dependent_packages(package).items():
             for dependent_version in versions:
@@ -77,7 +77,7 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
                              f"from {package}=={version}")
                 _METRIC_DEPENDENT_PACKAGES_ADDED.inc()
 
-                packages.append(f"{dependent_package}=={dependent_version}\n")
+                packages.append(f"{dependent_package}=={dependent_version}")
 
     if not packages:
         return
@@ -105,21 +105,17 @@ def main():
     """Perform graph refresh job."""
     _LOGGER.debug("Debug mode is on")
 
-    _LOGGER.info(
-        f"Version v{__version__}+{__git_commit_id__}.thoth_storages-{__storage_version__}")
+    _LOGGER.info(f"Version v{__version__}+{__git_commit_id__}.thoth_storages-{__storage_version__}")
 
     with _METRIC_RUNTIME.time():
         graph_refresh()
 
     if _THOTH_METRICS_PUSHGATEWAY_URL:
         try:
-            _LOGGER.debug(
-                f"Submitting metrics to Prometheus pushgateway {_THOTH_METRICS_PUSHGATEWAY_URL}")
-            push_to_gateway(_THOTH_METRICS_PUSHGATEWAY_URL, job='graph-refresh',
-                            registry=prometheus_registry)
+            _LOGGER.debug(f"Submitting metrics to Prometheus pushgateway {_THOTH_METRICS_PUSHGATEWAY_URL}")
+            push_to_gateway(_THOTH_METRICS_PUSHGATEWAY_URL, job='graph-refresh', registry=prometheus_registry)
         except Exception as e:
-            _LOGGER.exception(
-                f'An error occurred pushing the metrics: {str(e)}')
+            _LOGGER.exception(f'An error occurred pushing the metrics: {str(e)}')
 
 
 if __name__ == '__main__':
