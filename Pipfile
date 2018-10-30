@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-thoth-common = {version = "*", extras = ["openshift"]}
+thoth-common = {extras = ["openshift"], version = "*"}
 thoth-storages = "*"
 prometheus-client = "*"
 
