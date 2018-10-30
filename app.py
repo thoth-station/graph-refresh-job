@@ -54,6 +54,9 @@ _METRIC_DEPENDENT_PACKAGES_ADDED = Counter(
 _METRIC_SOLVERS_SCHEDULED = Counter(
     'graph_refresh_job_solvers_scheduler_total', 'Number of Solvers scheduled.', ['solver'],
     registry=prometheus_registry)
+_METRIC_SOLVERS_UNSCHEDULED = Counter(
+    'graph_refresh_job_solvers_unscheduled_total', 'Number of Solvers failed to schedule.', ['solver'],
+    registry=prometheus_registry)
 # If set to non-zero value, the graph-refresh will be scheduled for only first N unsolved package-versions.
 _THOTH_GRAPH_REFRESH_EAGER_STOP = int(os.getenv('THOTH_GRAPH_REFRESH_EAGER_STOP') or 0)
 
@@ -86,9 +89,20 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
     openshift = OpenShift()
     for solver in openshift.get_solver_names():
         for package in packages:
-            pod_id = openshift.run_solver(
-                solver=solver, debug=_LOG_SOLVER, packages=package, output=_SOLVER_OUTPUT
-            )
+            try:
+                pod_id = openshift.run_solver(
+                    solver=solver, debug=_LOG_SOLVER, packages=package, output=_SOLVER_OUTPUT
+                )
+            except Exception as ecx:
+                # If we get some errors from OpenShift master - do not retry. Rather schedule the remaining
+                # ones and try to schedule the given package in the next run.
+                _LOGGER.exception(
+                    f"Failed to schedule new solver to solve package {package}, the graph refresh job will not "
+                    "fail but will try to reschedule this in next run"
+                )
+                _METRIC_SOLVERS_UNSCHEDULED.labels(solver).inc()
+                continue
+
             _LOGGER.info("Scheduled solver %r for package %r, pod id is %r", solver, package, pod_id)
             _METRIC_SOLVERS_SCHEDULED.labels(solver).inc()
 
