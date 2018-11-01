@@ -90,7 +90,7 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
     for solver in openshift.get_solver_names():
         for package in packages:
             try:
-                pod_id = openshift.run_solver(
+                analysis_id = openshift.run_solver(
                     solver=solver, debug=_LOG_SOLVER, packages=package, output=_SOLVER_OUTPUT
                 )
             except Exception as ecx:
@@ -103,7 +103,7 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
                 _METRIC_SOLVERS_UNSCHEDULED.labels(solver).inc()
                 continue
 
-            _LOGGER.info("Scheduled solver %r for package %r, pod id is %r", solver, package, pod_id)
+            _LOGGER.info("Scheduled solver %r for package %r, analysis is %r", solver, package, analysis_id)
             _METRIC_SOLVERS_SCHEDULED.labels(solver).inc()
 
             count += 1
