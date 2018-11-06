@@ -76,7 +76,7 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
 
         for dependent_package, dependent_versions in graph.retrieve_dependent_packages(package).items():
             for dependent_version in versions:
-                _LOGGER.info(f"Adding dependency refresh {dependent_version!r}=={dependent_version!r} "
+                _LOGGER.info(f"Adding dependency refresh {dependent_package!r}=={dependent_version!r} "
                              f"from {package}=={version}")
                 _METRIC_DEPENDENT_PACKAGES_ADDED.inc()
 
