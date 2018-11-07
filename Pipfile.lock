@@ -207,6 +207,7 @@
                 "sha256:b370ab4abd925309db69a14a4723487948e9a83de60ca92782ec14992b741c89",
                 "sha256:c80dcf531deca2037105df09c933355c80830ffbf9e496b5e6a3967ac6809ef7"
             ],
+            "markers": "extra == 'openshift'",
             "version": "==6.0.0"
         },
         "markupsafe": {
@@ -287,6 +288,7 @@
             "hashes": [
                 "sha256:aab848277e61ad10446e6187c79781ba65256392ffd13aa874619a588c238dae"
             ],
+            "markers": "extra == 'openshift'",
             "version": "==0.6.2"
         },
         "prometheus-client": {
@@ -430,11 +432,11 @@
         },
         "thoth-storages": {
             "hashes": [
-                "sha256:292cfa47f613b392c31a34b0235734090b8af2d365e1ae456d7efbefa3a8289b",
-                "sha256:b36546507b9f489fb2e2e16d4038f76f43c83b5ccfcabaebfa0d46e5b2fea40e"
+                "sha256:45f593ecb1138e4ecd003dcdcaffc6dd6c71d84f73fe0bf1cf413108bcf0109f",
+                "sha256:73e9f5e1a04726a08a7f3a472fb54b5a3875bb461aad91391ee9b67e63aa58c9"
             ],
             "index": "pypi",
-            "version": "==0.7.3"
+            "version": "==0.7.4"
         },
         "tornado": {
             "hashes": [
