@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
+
 """Refresh data stored in the graph database."""
 
 import logging
@@ -24,12 +25,13 @@ from prometheus_client import CollectorRegistry, Gauge, Counter, push_to_gateway
 
 from thoth.common import init_logging
 from thoth.common import OpenShift
-from thoth.storages import __version__ as __storage_version__
+from thoth.common import __version__ as __common__version__
+
+from thoth.storages import __version__ as __storage__version__
 from thoth.storages import GraphDatabase
 
 
-__version__ = '0.6.0'
-__git_commit_id__ = os.getenv('OPENSHIFT_BUILD_COMMIT', '')
+__version__ = f"0.6.1+storage.{__storage__version__}.common.{__common__version__}"
 
 init_logging()
 prometheus_registry = CollectorRegistry()
@@ -117,9 +119,8 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
 
 def main():
     """Perform graph refresh job."""
+    _LOGGER.info(f"Version v{__version__}")
     _LOGGER.debug("Debug mode is on")
-
-    _LOGGER.info(f"Version v{__version__}+{__git_commit_id__}.thoth_storages-{__storage_version__}")
 
     with _METRIC_RUNTIME.time():
         graph_refresh()
