@@ -41,11 +41,18 @@ _LOGGER = logging.getLogger('thoth.graph_refresh_job')
 
 _SOLVER_OUTPUT = os.environ['THOTH_SOLVER_OUTPUT']
 _LOG_SOLVER = os.environ.get('THOTH_LOG_SOLVER') == 'DEBUG'
+THOTH_MY_NAMESPACE = os.getenv("NAMESPACE", "thoth-test-core")
 
 _THOTH_METRICS_PUSHGATEWAY_URL = os.getenv('THOTH_METRICS_PUSHGATEWAY_URL')
 _METRIC_RUNTIME = Gauge(
     'graph_refresh_job_runtime_seconds', 'Runtime of graph refresh job in seconds.', [],
     registry=prometheus_registry)
+
+# Metrics Exporter Metrics
+_METRIC_INFO = Gauge('thoth_graph_refresh_job_info',
+                     'Thoth Graph Refresh Job information', ['env', 'version'], registry=prometheus_registry)
+_METRIC_INFO.labels(THOTH_MY_NAMESPACE, __version__).inc()
+
 _METRIC_PACKAGES_ADDED = Counter(
     'graph_refresh_job_packages_added_total', 'Number of new and unsolved package-version added.', [],
     registry=prometheus_registry)
