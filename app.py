@@ -75,6 +75,8 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
     graph = GraphDatabase(hosts=graph_hosts, port=graph_port)
     graph.connect()
 
+    indexes = graph.get_python_package_index_urls()
+
     packages = []
     for package, versions in graph.retrieve_unsolved_pypi_packages().items():
         for version in versions:
@@ -100,7 +102,7 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
         for package in packages:
             try:
                 analysis_id = openshift.run_solver(
-                    solver=solver, debug=_LOG_SOLVER, packages=package, output=_SOLVER_OUTPUT
+                    solver=solver, debug=_LOG_SOLVER, packages=package, indexes=indexes, output=_SOLVER_OUTPUT
                 )
             except Exception as ecx:
                 # If we get some errors from OpenShift master - do not retry. Rather schedule the remaining
