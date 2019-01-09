@@ -37,37 +37,57 @@ init_logging()
 prometheus_registry = CollectorRegistry()
 
 
-_LOGGER = logging.getLogger('thoth.graph_refresh_job')
+_LOGGER = logging.getLogger("thoth.graph_refresh_job")
 
-_SOLVER_OUTPUT = os.environ['THOTH_SOLVER_OUTPUT']
-_LOG_SOLVER = os.environ.get('THOTH_LOG_SOLVER') == 'DEBUG'
+_SOLVER_OUTPUT = os.environ["THOTH_SOLVER_OUTPUT"]
+_SUBGRAPH_CHECK_API = os.environ["THOTH_SUBGRAPH_CHECK_API"]
+
+_LOG_SOLVER = os.environ.get("THOTH_LOG_SOLVER") == "DEBUG"
 THOTH_MY_NAMESPACE = os.getenv("NAMESPACE", "thoth-test-core")
 
-_THOTH_METRICS_PUSHGATEWAY_URL = os.getenv('THOTH_METRICS_PUSHGATEWAY_URL')
+_THOTH_METRICS_PUSHGATEWAY_URL = os.getenv("THOTH_METRICS_PUSHGATEWAY_URL")
 _METRIC_RUNTIME = Gauge(
-    'graph_refresh_job_runtime_seconds', 'Runtime of graph refresh job in seconds.', [],
-    registry=prometheus_registry)
+    "graph_refresh_job_runtime_seconds",
+    "Runtime of graph refresh job in seconds.",
+    [],
+    registry=prometheus_registry,
+)
 
 # Metrics Exporter Metrics
-_METRIC_INFO = Gauge('thoth_graph_refresh_job_info',
-                     'Thoth Graph Refresh Job information', ['env', 'version'], registry=prometheus_registry)
+_METRIC_INFO = Gauge(
+    "thoth_graph_refresh_job_info",
+    "Thoth Graph Refresh Job information",
+    ["env", "version"],
+    registry=prometheus_registry,
+)
 _METRIC_INFO.labels(THOTH_MY_NAMESPACE, __version__).inc()
 
 _METRIC_PACKAGES_ADDED = Counter(
-    'graph_refresh_job_packages_added_total', 'Number of new and unsolved package-version added.', [],
-    registry=prometheus_registry)
+    "graph_refresh_job_packages_added_total",
+    "Number of new and unsolved package-version added.",
+    [],
+    registry=prometheus_registry,
+)
 _METRIC_DEPENDENT_PACKAGES_ADDED = Counter(
-    'graph_refresh_job_dependent_packages_added_total',
-    'Number package-version to be solved based on a package-version added.', [],
-    registry=prometheus_registry)
+    "graph_refresh_job_dependent_packages_added_total",
+    "Number package-version to be solved based on a package-version added.",
+    [],
+    registry=prometheus_registry,
+)
 _METRIC_SOLVERS_SCHEDULED = Counter(
-    'graph_refresh_job_solvers_scheduler_total', 'Number of Solvers scheduled.', ['solver'],
-    registry=prometheus_registry)
+    "graph_refresh_job_solvers_scheduler_total",
+    "Number of Solvers scheduled.",
+    ["solver"],
+    registry=prometheus_registry,
+)
 _METRIC_SOLVERS_UNSCHEDULED = Counter(
-    'graph_refresh_job_solvers_unscheduled_total', 'Number of Solvers failed to schedule.', ['solver'],
-    registry=prometheus_registry)
+    "graph_refresh_job_solvers_unscheduled_total",
+    "Number of Solvers failed to schedule.",
+    ["solver"],
+    registry=prometheus_registry,
+)
 # If set to non-zero value, the graph-refresh will be scheduled for only first N unsolved package-versions.
-_THOTH_GRAPH_REFRESH_EAGER_STOP = int(os.getenv('THOTH_GRAPH_REFRESH_EAGER_STOP') or 0)
+_THOTH_GRAPH_REFRESH_EAGER_STOP = int(os.getenv("THOTH_GRAPH_REFRESH_EAGER_STOP") or 0)
 
 
 def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
@@ -85,10 +105,14 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
 
             packages.append(f"{package}=={version}")
 
-        for dependent_package, dependent_versions in graph.retrieve_dependent_packages(package).items():
+        for dependent_package, dependent_versions in graph.retrieve_dependent_packages(
+            package
+        ).items():
             for dependent_version in versions:
-                _LOGGER.info(f"Adding dependency refresh {dependent_package!r}=={dependent_version!r} "
-                             f"from {package}=={version}")
+                _LOGGER.info(
+                    f"Adding dependency refresh {dependent_package!r}=={dependent_version!r} "
+                    f"from {package}=={version}"
+                )
                 _METRIC_DEPENDENT_PACKAGES_ADDED.inc()
 
                 packages.append(f"{dependent_package}=={dependent_version}")
@@ -102,7 +126,12 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
         for package in packages:
             try:
                 analysis_id = openshift.run_solver(
-                    solver=solver, debug=_LOG_SOLVER, packages=package, indexes=indexes, output=_SOLVER_OUTPUT
+                    solver=solver,
+                    debug=_LOG_SOLVER,
+                    packages=package,
+                    indexes=indexes,
+                    output=_SOLVER_OUTPUT,
+                    subgraph_check_api=_SUBGRAPH_CHECK_API,
                 )
             except Exception as ecx:
                 # If we get some errors from OpenShift master - do not retry. Rather schedule the remaining
@@ -114,14 +143,22 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
                 _METRIC_SOLVERS_UNSCHEDULED.labels(solver).inc()
                 continue
 
-            _LOGGER.info("Scheduled solver %r for package %r, analysis is %r", solver, package, analysis_id)
+            _LOGGER.info(
+                "Scheduled solver %r for package %r, analysis is %r",
+                solver,
+                package,
+                analysis_id,
+            )
             _METRIC_SOLVERS_SCHEDULED.labels(solver).inc()
 
             count += 1
-            if _THOTH_GRAPH_REFRESH_EAGER_STOP and count >= _THOTH_GRAPH_REFRESH_EAGER_STOP:
+            if (
+                _THOTH_GRAPH_REFRESH_EAGER_STOP
+                and count >= _THOTH_GRAPH_REFRESH_EAGER_STOP
+            ):
                 _LOGGER.info(
                     "Eager stop of scheduling new solver runs for unsolved package versions, packages scheduled: %d",
-                    count
+                    count,
                 )
                 return
 
@@ -136,11 +173,17 @@ def main():
 
     if _THOTH_METRICS_PUSHGATEWAY_URL:
         try:
-            _LOGGER.debug(f"Submitting metrics to Prometheus pushgateway {_THOTH_METRICS_PUSHGATEWAY_URL}")
-            push_to_gateway(_THOTH_METRICS_PUSHGATEWAY_URL, job='graph-refresh', registry=prometheus_registry)
+            _LOGGER.debug(
+                f"Submitting metrics to Prometheus pushgateway {_THOTH_METRICS_PUSHGATEWAY_URL}"
+            )
+            push_to_gateway(
+                _THOTH_METRICS_PUSHGATEWAY_URL,
+                job="graph-refresh",
+                registry=prometheus_registry,
+            )
         except Exception as e:
-            _LOGGER.exception(f'An error occurred pushing the metrics: {str(e)}')
+            _LOGGER.exception(f"An error occurred pushing the metrics: {str(e)}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

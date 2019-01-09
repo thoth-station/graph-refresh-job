@@ -53,8 +53,10 @@ objects:
                   name: graph-refresh
                   env:
                     - name: 'THOTH_SOLVER_OUTPUT'
-                      # TODO: we should utilize this with user-api
+                      # TODO: move these hardcoded of subgraph check api and solver output into cm
                       value: http://result-api/api/v1/solver-result
+                    - name: 'THOTH_SUBGRAPH_CHECK_API'
+                      value: http://result-api/api/v1/subgraph-check
                     - name: THOTH_GRAPH_REFRESH_EAGER_STOP
                       # Stop after N scheduled solver runs per new package-version.
                       value: "50"
