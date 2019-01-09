@@ -40,6 +40,8 @@ prometheus_registry = CollectorRegistry()
 _LOGGER = logging.getLogger('thoth.graph_refresh_job')
 
 _SOLVER_OUTPUT = os.environ['THOTH_SOLVER_OUTPUT']
+_SUBGRAPH_CHECK_API = os.environ['THOTH_SUBGRAPH_CHECK_API']
+
 _LOG_SOLVER = os.environ.get('THOTH_LOG_SOLVER') == 'DEBUG'
 THOTH_MY_NAMESPACE = os.getenv("NAMESPACE", "thoth-test-core")
 
@@ -102,7 +104,7 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
         for package in packages:
             try:
                 analysis_id = openshift.run_solver(
-                    solver=solver, debug=_LOG_SOLVER, packages=package, indexes=indexes, output=_SOLVER_OUTPUT
+                    solver=solver, debug=_LOG_SOLVER, packages=package, indexes=indexes, output=_SOLVER_OUTPUT, subgraph_check_api=_SUBGRAPH_CHECK_API
                 )
             except Exception as ecx:
                 # If we get some errors from OpenShift master - do not retry. Rather schedule the remaining
