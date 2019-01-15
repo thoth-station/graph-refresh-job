@@ -125,7 +125,7 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
     for solver in openshift.get_solver_names():
         for package in packages:
             try:
-                analysis_id = openshift.run_solver(
+                analysis_id = openshift.schedule_solver(
                     solver=solver,
                     debug=_LOG_SOLVER,
                     packages=package,
