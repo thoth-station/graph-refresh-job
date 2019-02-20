@@ -96,31 +96,34 @@ def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
 
     indexes = graph.get_python_package_index_urls()
 
+    openshift = OpenShift()
+
     packages = []
-    for package, versions in graph.retrieve_unsolved_pypi_packages().items():
-        for version in versions:
-            _LOGGER.info(f"Adding new package {package} in version {version}")
-            _METRIC_PACKAGES_ADDED.inc()
+    # Iterate over all registered solvers and gather packages which were not solved by them.
+    for solver_name in openshift.get_solver_names():
+        for package, versions in graph.retrieve_unsolved_pypi_packages(solver_name).items():
+            for version in versions:
+                _LOGGER.info(f"Adding new package {package} in version {version}")
+                _METRIC_PACKAGES_ADDED.inc()
 
-            packages.append(f"{package}=={version}")
+                packages.append(f"{package}=={version}")
 
-        for dependent_package, dependent_versions in graph.retrieve_dependent_packages(
-            package
-        ).items():
-            for dependent_version in versions:
-                _LOGGER.info(
-                    f"Adding dependency refresh {dependent_package!r}=={dependent_version!r} "
-                    f"from {package}=={version}"
-                )
-                _METRIC_DEPENDENT_PACKAGES_ADDED.inc()
+            for dependent_package, dependent_versions in graph.retrieve_dependent_packages(
+                package
+            ).items():
+                for dependent_version in versions:
+                    _LOGGER.info(
+                        f"Adding dependency refresh {dependent_package!r}=={dependent_version!r} "
+                        f"from {package}=={version}"
+                    )
+                    _METRIC_DEPENDENT_PACKAGES_ADDED.inc()
 
-                packages.append(f"{dependent_package}=={dependent_version}")
+                    packages.append(f"{dependent_package}=={dependent_version}")
 
     if not packages:
         return
 
     count = 0
-    openshift = OpenShift()
     for solver in openshift.get_solver_names():
         for package in packages:
             try:
