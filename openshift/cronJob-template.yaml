@@ -7,12 +7,12 @@ metadata:
       This is Thoth Graph Refresh CronJob CronJob, this template is meant to be used by Bots,
       but could also be used by humans...
     openshift.io/display-name: "Thoth: Graph Refresh Job"
-    version: 0.6.0
+    version: 0.7.0
     tags: thoth,graph-refresh,ai-stacks,aistacks,graph
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
     template.openshift.io/long-description: >
       This template defines resources needed to deploy Thoth Graph Refresh Job CronJob to OpenShift.
-    template.openshift.io/provider-display-name: Red Hat, Inc.
+    template.openshift.io/provider-display-name: "Red Hat, Inc."
   labels:
     template: graph-refresh-cronjob
     app: thoth
@@ -25,6 +25,18 @@ parameters:
     name: THOTH_SUSPEND_JOB
     value: "true"
 
+  - description: Project the ImageStream to be use lives in
+    displayName: ImageStream Project
+    required: true
+    name: IMAGE_STREAM_NAMESPACE
+    value: "thoth-infra-stage" # TODO adjust ansible role so that we dont need a default here
+
+  - description: Tag of the ImageStream to be use
+    displayName: ImageStream Tag
+    required: true
+    name: IMAGE_STREAM_TAG
+    value: "latest"
+
 objects:
   - kind: CronJob
     apiVersion: batch/v2alpha1
@@ -34,10 +46,10 @@ objects:
         app: thoth
         component: graph-refresh
     spec:
-      schedule: '0 * * * *'
+      schedule: "0 * * * *"
       suspend: ${{THOTH_SUSPEND_JOB}}
       concurrencyPolicy: Forbid
-      successfulJobsHistoryLimit: 4
+      successfulJobsHistoryLimit: 2
       failedJobsHistoryLimit: 4
       jobTemplate:
         spec:
@@ -49,19 +61,19 @@ objects:
             spec:
               serviceAccountName: analyzer
               containers:
-                - image: graph-refresh-job
+                - image: "${IMAGE_STREAM_NAMESPACE}/graph-refresh-job:${IMAGE_STREAM_TAG}"
                   name: graph-refresh
                   env:
-                    - name: 'THOTH_SOLVER_OUTPUT'
+                    - name: "THOTH_SOLVER_OUTPUT"
                       # TODO: move these hardcoded of subgraph check api and solver output into cm
                       value: http://result-api/api/v1/solver-result
-                    - name: 'THOTH_SUBGRAPH_CHECK_API'
+                    - name: "THOTH_SUBGRAPH_CHECK_API"
                       value: http://result-api/api/v1/subgraph-check
                     - name: THOTH_GRAPH_REFRESH_EAGER_STOP
                       # Stop after N scheduled solver runs per new package-version.
                       value: "50"
                     - name: KUBERNETES_API_URL
-                      value: 'https://kubernetes.default.svc.cluster.local'
+                      value: "https://kubernetes.default.svc.cluster.local"
                     - name: KUBERNETES_VERIFY_TLS
                       value: "0"
                     - name: THOTH_MIDDLETIER_NAMESPACE
