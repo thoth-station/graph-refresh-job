@@ -7,7 +7,7 @@ metadata:
       This is Thoth Graph Refresh CronJob CronJob, this template is meant to be used by Bots,
       but could also be used by humans...
     openshift.io/display-name: "Thoth: Graph Refresh Job"
-    version: 0.7.0
+    version: 0.7.1
     tags: thoth,graph-refresh,ai-stacks,aistacks,graph
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
     template.openshift.io/long-description: >
@@ -29,13 +29,19 @@ parameters:
     displayName: ImageStream Project
     required: true
     name: IMAGE_STREAM_NAMESPACE
-    value: "thoth-infra-stage" # TODO adjust ansible role so that we dont need a default here
+    # TODO adjust ansible role so that we dont need a default here
+    value: "thoth-infra-stage"
 
   - description: Tag of the ImageStream to be use
     displayName: ImageStream Tag
     required: true
     name: IMAGE_STREAM_TAG
     value: "latest"
+
+  - description: Service account to be used.
+    displayName: Service account name.
+    required: true
+    name: SERVICE_ACCOUNT_NAME
 
 objects:
   - kind: CronJob
@@ -59,7 +65,7 @@ objects:
                 app: thoth
                 component: graph-refresh
             spec:
-              serviceAccountName: analyzer
+              serviceAccountName: "${SERVICE_ACCOUNT_NAME}"
               containers:
                 - image: "${IMAGE_STREAM_NAMESPACE}/graph-refresh-job:${IMAGE_STREAM_TAG}"
                   name: graph-refresh
