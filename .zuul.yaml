@@ -14,7 +14,7 @@
       jobs:
         - trigger-build:
             vars:
-              webhook_url: https://paas.upshift.redhat.com/oapi/v1/namespaces/thoth-test-core/buildconfigs/graph-refresh-job/webhooks/
+              webhook_url: https://paas.upshift.redhat.com/oapi/v1/namespaces/thoth-test-core/buildconfigs/graph-refresh-job
     release:
       jobs:
         - upload-pypi-sesheta
