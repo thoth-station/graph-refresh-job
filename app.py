@@ -89,9 +89,9 @@ _METRIC_SOLVERS_UNSCHEDULED = Counter(
 _THOTH_GRAPH_REFRESH_EAGER_STOP = int(os.getenv("THOTH_GRAPH_REFRESH_EAGER_STOP") or 0)
 
 
-def graph_refresh(graph_hosts: str = None, graph_port: int = None) -> None:
+def graph_refresh() -> None:
     """Schedule refresh for packages that are not yet analyzed by solver."""
-    graph = GraphDatabase(hosts=graph_hosts, port=graph_port)
+    graph = GraphDatabase()
     graph.connect()
 
     indexes = graph.get_python_package_index_urls()
