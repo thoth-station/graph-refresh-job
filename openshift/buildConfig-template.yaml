@@ -61,7 +61,7 @@ objects:
         - type: Generic
           generic:
             secretReference:
-              name: zuul-incoming-webhook
+              name: generic-webhook-secret
 
 parameters:
   - description: Name of the GitHub repository for Thoth's Graph Refresh Job
