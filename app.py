@@ -44,7 +44,7 @@ _SUBGRAPH_CHECK_API = os.environ["THOTH_SUBGRAPH_CHECK_API"]
 _LOG_SOLVER = os.environ.get("THOTH_LOG_SOLVER") == "DEBUG"
 THOTH_MY_NAMESPACE = os.getenv("NAMESPACE", "thoth-test-core")
 
-_THOTH_METRICS_PUSHGATEWAY_URL = os.getenv("THOTH_METRICS_PUSHGATEWAY_URL")
+_THOTH_METRICS_PUSHGATEWAY_URL = os.getenv("PROMETHEUS_PUSHGATEWAY_URL")
 _METRIC_RUNTIME = Gauge(
     "graph_refresh_job_runtime_seconds",
     "Runtime of graph refresh job in seconds.",
