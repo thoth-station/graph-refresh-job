@@ -94,7 +94,7 @@ def graph_refresh() -> None:
     graph = GraphDatabase()
     graph.connect()
 
-    indexes = graph.get_python_package_index_urls()
+    indexes = list(graph.get_python_package_index_urls())
 
     openshift = OpenShift()
 
