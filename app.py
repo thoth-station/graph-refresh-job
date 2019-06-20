@@ -44,7 +44,7 @@ _SUBGRAPH_CHECK_API = os.environ["THOTH_SUBGRAPH_CHECK_API"]
 _LOG_SOLVER = os.environ.get("THOTH_LOG_SOLVER") == "DEBUG"
 THOTH_MY_NAMESPACE = os.getenv("NAMESPACE", "thoth-test-core")
 
-_THOTH_METRICS_PUSHGATEWAY_URL = os.getenv("THOTH_METRICS_PUSHGATEWAY_URL")
+_THOTH_METRICS_PUSHGATEWAY_URL = os.getenv("PROMETHEUS_PUSHGATEWAY_URL")
 _METRIC_RUNTIME = Gauge(
     "graph_refresh_job_runtime_seconds",
     "Runtime of graph refresh job in seconds.",
@@ -64,12 +64,6 @@ _METRIC_INFO.labels(THOTH_MY_NAMESPACE, __version__).inc()
 _METRIC_PACKAGES_ADDED = Counter(
     "graph_refresh_job_packages_added_total",
     "Number of new and unsolved package-version added.",
-    [],
-    registry=prometheus_registry,
-)
-_METRIC_DEPENDENT_PACKAGES_ADDED = Counter(
-    "graph_refresh_job_dependent_packages_added_total",
-    "Number package-version to be solved based on a package-version added.",
     [],
     registry=prometheus_registry,
 )
@@ -94,7 +88,7 @@ def graph_refresh() -> None:
     graph = GraphDatabase()
     graph.connect()
 
-    indexes = graph.get_python_package_index_urls()
+    indexes = list(graph.get_python_package_index_urls())
 
     openshift = OpenShift()
 
@@ -108,18 +102,6 @@ def graph_refresh() -> None:
                 _METRIC_PACKAGES_ADDED.inc()
 
                 packages.append(f"{package}=={version}")
-
-            for dependent_package, dependent_versions in graph.retrieve_dependent_packages(
-                package
-            ).items():
-                for dependent_version in versions:
-                    _LOGGER.info(
-                        f"Adding dependency refresh {dependent_package!r}=={dependent_version!r} "
-                        f"from {package}=={version}"
-                    )
-                    _METRIC_DEPENDENT_PACKAGES_ADDED.inc()
-
-                    packages.append(f"{dependent_package}=={dependent_version}")
 
     if not packages:
         return

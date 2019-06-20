@@ -103,7 +103,7 @@ objects:
                       configMapKeyRef:
                         key: rsyslog-port
                         name: thoth
-                    - name: THOTH_METRICS_PUSHGATEWAY_URL
+                    - name: PROMETHEUS_PUSHGATEWAY_URL
                       valueFrom:
                         configMapKeyRef:
                           name: thoth
