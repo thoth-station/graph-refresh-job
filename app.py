@@ -67,12 +67,6 @@ _METRIC_PACKAGES_ADDED = Counter(
     [],
     registry=prometheus_registry,
 )
-_METRIC_DEPENDENT_PACKAGES_ADDED = Counter(
-    "graph_refresh_job_dependent_packages_added_total",
-    "Number package-version to be solved based on a package-version added.",
-    [],
-    registry=prometheus_registry,
-)
 _METRIC_SOLVERS_SCHEDULED = Counter(
     "graph_refresh_job_solvers_scheduler_total",
     "Number of Solvers scheduled.",
@@ -108,18 +102,6 @@ def graph_refresh() -> None:
                 _METRIC_PACKAGES_ADDED.inc()
 
                 packages.append(f"{package}=={version}")
-
-            for dependent_package, dependent_versions in graph.retrieve_dependent_packages(
-                package
-            ).items():
-                for dependent_version in versions:
-                    _LOGGER.info(
-                        f"Adding dependency refresh {dependent_package!r}=={dependent_version!r} "
-                        f"from {package}=={version}"
-                    )
-                    _METRIC_DEPENDENT_PACKAGES_ADDED.inc()
-
-                    packages.append(f"{dependent_package}=={dependent_version}")
 
     if not packages:
         return
