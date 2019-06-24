@@ -16,6 +16,9 @@ analyzed yet by talking to a cluster Dgraph's instance:
   $ oc login <cluster-url>  # Make sure you are logged in
   $ KUBERNETES_VERIFY_TLS=0 THOTH_INFRA_NAMESPACE=thoth-test-core GRAPH_SERVICE_HOST=graph.test.thoth-station.ninja GRAPH_TLS_PATH=./tls-test pipenv run python3 ./app.py
 
+You need to obtain TLS certificates in order to talk to a cluster graph
+database and place them into `./tls-test` directory as shown above.
+
 Insights to graph-refresh job
 =============================
 
@@ -31,7 +34,7 @@ in Thoth's middletier namespace.
   * `workload operator <https://github.com/thoth-station/workload-operator>`_ makes sure solvers are run based on resources available in the middletier namespace
   * `graph sync scheduler <https://github.com/thoth-station/graph-sync-scheduler>`_ makes sure results of solver runs get synced into Thoth's graph database (raw JSON files are stored on Ceph)
 
-Packages which are not resolved yet might be combing from:
+Packages which are not resolved yet might be coming from:
 
 * user requests on advises for software stacks
 * user requests for provenance checks
