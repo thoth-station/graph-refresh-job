@@ -38,8 +38,8 @@ prometheus_registry = CollectorRegistry()
 
 _LOGGER = logging.getLogger("thoth.graph_refresh_job")
 
-_SOLVER_OUTPUT = os.environ["THOTH_SOLVER_OUTPUT"]
-_SUBGRAPH_CHECK_API = os.environ["THOTH_SUBGRAPH_CHECK_API"]
+_SOLVER_OUTPUT = os.getenv("THOTH_SOLVER_OUTPUT", "http://result-api/api/v1/solver-result")
+_SUBGRAPH_CHECK_API = os.getenv("THOTH_SUBGRAPH_CHECK_API", "http://result-api/api/v1/subgraph-check")
 
 _LOG_SOLVER = os.environ.get("THOTH_LOG_SOLVER") == "DEBUG"
 THOTH_MY_NAMESPACE = os.getenv("NAMESPACE", "thoth-test-core")
