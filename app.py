@@ -96,7 +96,7 @@ def graph_refresh() -> None:
     # Iterate over all registered solvers and gather packages which were not solved by them.
     for solver_name in openshift.get_solver_names():
         _LOGGER.info("Checking unsolved packages for solver %r", solver_name)
-        for package, versions in graph.retrieve_unsolved_pypi_packages(
+        for package, versions in graph.retrieve_unsolved_python_packages(
             solver_name
         ).items():
             for version in versions:
