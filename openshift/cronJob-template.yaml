@@ -93,6 +93,11 @@ objects:
                         configMapKeyRef:
                           key: infra-namespace
                           name: thoth
+                    - name: THOTH_DEPLOYMENT_NAME
+                      valueFrom:
+                        configMapKeyRef:
+                          key: storage-bucket-name
+                          name: thoth
                     - name: RSYSLOG_HOST
                       valueFrom:
                       configMapKeyRef:
