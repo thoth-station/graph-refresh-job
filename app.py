@@ -38,6 +38,8 @@ prometheus_registry = CollectorRegistry()
 _GRAPH_DB = GraphDatabase()
 _GRAPH_DB.connect()
 
+_OPENSHIFT = OpenShift()
+
 _LOGGER = logging.getLogger("thoth.graph_refresh_job")
 
 _SOLVER_OUTPUT = os.getenv("THOTH_SOLVER_OUTPUT", "http://result-api/api/v1/solver-result")
@@ -105,11 +107,9 @@ def graph_refresh_solver() -> None:
     """Schedule refresh for packages that are not yet analyzed by solver."""
     indexes = list(_GRAPH_DB.get_python_package_index_urls())
 
-    openshift = OpenShift()
-
     packages = []
     # Iterate over all registered solvers and gather packages which were not solved by them.
-    for solver_name in openshift.get_solver_names():
+    for solver_name in _OPENSHIFT.get_solver_names():
         _LOGGER.info("Checking unsolved packages for solver %r", solver_name)
         for package, versions in _GRAPH_DB.retrieve_unsolved_python_packages(
             solver_name
@@ -127,7 +127,7 @@ def graph_refresh_solver() -> None:
     count = 0
     for package, solver in packages:
         try:
-            analysis_id = openshift.schedule_solver(
+            analysis_id = _OPENSHIFT.schedule_solver(
                 solver=solver,
                 debug=_LOG_SOLVER,
                 packages=package,
@@ -176,7 +176,7 @@ def graph_refresh_package_analyzer() -> None:
         version = item["package_version"]
         url = item["index_url"]
         try:
-            analysis_id = openshift.schedule_package_analyzer(
+            analysis_id = _OPENSHIFT.schedule_package_analyzer(
                 package_name=package,
                 package_version=version,
                 index_url=url,
