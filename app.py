@@ -86,7 +86,7 @@ _METRIC_SOLVERS_UNSCHEDULED = Counter(
     registry=prometheus_registry,
 )
 _METRIC_PACKAGE_ANALYZERS_SCHEDULED = Counter(
-    "graph_refresh_job_package_analyzers_scheduler_total",
+    "graph_refresh_job_package_analyzers_scheduled_total",
     "Number of Package Analyzers scheduled.",
     ["package-analyzer"],
     registry=prometheus_registry,
