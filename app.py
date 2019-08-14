@@ -218,21 +218,6 @@ def main():
 
     with _METRIC_RUNTIME.time():
         graph_refresh_solver()
-
-    if _THOTH_METRICS_PUSHGATEWAY_URL:
-        try:
-            _LOGGER.debug(
-                f"Submitting metrics to Prometheus pushgateway {_THOTH_METRICS_PUSHGATEWAY_URL}"
-            )
-            push_to_gateway(
-                _THOTH_METRICS_PUSHGATEWAY_URL,
-                job="graph-refresh",
-                registry=prometheus_registry,
-            )
-        except Exception as e:
-            _LOGGER.exception(f"An error occurred pushing the metrics: {str(e)}")
-
-    with _METRIC_RUNTIME.time():
         graph_refresh_package_analyzer()
 
     if _THOTH_METRICS_PUSHGATEWAY_URL:
@@ -242,7 +227,7 @@ def main():
             )
             push_to_gateway(
                 _THOTH_METRICS_PUSHGATEWAY_URL,
-                job="graph-refresh-package-analyzer",
+                job="graph-refresh",
                 registry=prometheus_registry,
             )
         except Exception as e:
