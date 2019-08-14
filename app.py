@@ -74,7 +74,7 @@ _METRIC_PACKAGES_ADDED = Counter(
     registry=prometheus_registry,
 )
 _METRIC_SOLVERS_SCHEDULED = Counter(
-    "graph_refresh_job_solvers_scheduler_total",
+    "graph_refresh_job_solvers_scheduled_total",
     "Number of Solvers scheduled.",
     ["solver"],
     registry=prometheus_registry,
