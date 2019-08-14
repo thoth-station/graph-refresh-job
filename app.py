@@ -35,6 +35,8 @@ __version__ = f"0.6.1+storage.{__storage__version__}.common.{__common__version__
 init_logging()
 prometheus_registry = CollectorRegistry()
 
+_GRAPH_DB = GraphDatabase()
+_GRAPH_DB.connect()
 
 _LOGGER = logging.getLogger("thoth.graph_refresh_job")
 
@@ -101,10 +103,7 @@ _THOTH_GRAPH_REFRESH_EAGER_STOP = int(os.getenv("THOTH_GRAPH_REFRESH_EAGER_STOP"
 
 def graph_refresh() -> None:
     """Schedule refresh for packages that are not yet analyzed by solver."""
-    graph = GraphDatabase()
-    graph.connect()
-
-    indexes = list(graph.get_python_package_index_urls())
+    indexes = list(_GRAPH_DB.get_python_package_index_urls())
 
     openshift = OpenShift()
 
@@ -112,7 +111,7 @@ def graph_refresh() -> None:
     # Iterate over all registered solvers and gather packages which were not solved by them.
     for solver_name in openshift.get_solver_names():
         _LOGGER.info("Checking unsolved packages for solver %r", solver_name)
-        for package, versions in graph.retrieve_unsolved_python_packages(
+        for package, versions in _GRAPH_DB.retrieve_unsolved_python_packages(
             solver_name
         ).items():
             for version in versions:
@@ -165,10 +164,7 @@ def graph_refresh() -> None:
 
 def graph_refresh_package_analyzer() -> None:
     """Schedule refresh for packages that are not yet analyzed by package analyzer."""
-    graph = GraphDatabase()
-    graph.connect()
-
-    packages = graph.retrieve_unanalyzed_python_package_versions()
+    packages = _GRAPH_DB.retrieve_unanalyzed_python_package_versions()
 
     if not packages:
         _LOGGER.info("No unanalyzed packages found")
