@@ -194,7 +194,6 @@ def graph_refresh_package_analyzer() -> None:
 
         _LOGGER.info(
             "Scheduled package analyzer for package %r, version %r, index_url %r, analysis is %r",
-            ,
             package,
             version,
             url,
