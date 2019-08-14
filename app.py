@@ -101,7 +101,7 @@ _METRIC_PACKAGE_ANALYZERS_UNSCHEDULED = Counter(
 _THOTH_GRAPH_REFRESH_EAGER_STOP = int(os.getenv("THOTH_GRAPH_REFRESH_EAGER_STOP") or 0)
 
 
-def graph_refresh() -> None:
+def graph_refresh_solver() -> None:
     """Schedule refresh for packages that are not yet analyzed by solver."""
     indexes = list(_GRAPH_DB.get_python_package_index_urls())
 
@@ -217,7 +217,7 @@ def main():
     _LOGGER.debug("Debug mode is on")
 
     with _METRIC_RUNTIME.time():
-        graph_refresh()
+        graph_refresh_solver()
 
     if _THOTH_METRICS_PUSHGATEWAY_URL:
         try:
