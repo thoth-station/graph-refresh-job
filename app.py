@@ -90,13 +90,11 @@ _METRIC_SOLVERS_UNSCHEDULED = Counter(
 _METRIC_PACKAGE_ANALYZERS_SCHEDULED = Counter(
     "graph_refresh_job_package_analyzers_scheduled_total",
     "Number of Package Analyzers scheduled.",
-    ["package-analyzer"],
     registry=prometheus_registry,
 )
 _METRIC_PACKAGE_ANALYZERS_UNSCHEDULED = Counter(
     "graph_refresh_job_package_analyzers_unscheduled_total",
     "Number of Package Analyzers failed to schedule.",
-    ["package-analyzer"],
     registry=prometheus_registry,
 )
 # If set to non-zero value, the graph-refresh will be scheduled for only first N unsolved package-versions.
@@ -189,7 +187,7 @@ def graph_refresh_package_analyzer() -> None:
                 f"Failed to schedule new package analyzer to analyzer package {package} in version {version}"
                 f"from {url}, the graph refresh job will not fail but will try to reschedule this in next run"
             )
-            _METRIC_PACKAGE_ANALYZERS_UNSCHEDULED.labels(package).inc()
+            _METRIC_PACKAGE_ANALYZERS_UNSCHEDULED.inc()
             continue
 
         _LOGGER.info(
@@ -199,7 +197,7 @@ def graph_refresh_package_analyzer() -> None:
             url,
             analysis_id,
         )
-        _METRIC_PACKAGE_ANALYZERS_SCHEDULED.labels(package).inc()
+        _METRIC_PACKAGE_ANALYZERS_SCHEDULED.inc()
 
         count += 1
         if _THOTH_GRAPH_REFRESH_EAGER_STOP and count >= _THOTH_GRAPH_REFRESH_EAGER_STOP:
