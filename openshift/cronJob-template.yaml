@@ -19,6 +19,12 @@ metadata:
     component: graph-refresh
 
 parameters:
+  - description: Registry the ImageStream to be use lives in
+    displayName: ImageStream Registry
+    required: true
+    name: IMAGE_STREAM_REGISTRY
+    value: "docker-registry.default.svc:5000"
+
   - displayName: Suspend CronJob run
     description: Suspend CronJob run
     required: true
@@ -68,7 +74,7 @@ objects:
             spec:
               serviceAccountName: "${SERVICE_ACCOUNT_NAME}"
               containers:
-                - image: "${IMAGE_STREAM_NAMESPACE}/graph-refresh-job:${IMAGE_STREAM_TAG}"
+                - image: "${IMAGE_STREAM_REGISTRY}/${IMAGE_STREAM_NAMESPACE}/graph-refresh-job:${IMAGE_STREAM_TAG}"
                   name: graph-refresh
                   env:
                     - name: "THOTH_SOLVER_OUTPUT"
