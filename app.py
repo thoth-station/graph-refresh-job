@@ -132,6 +132,7 @@ def graph_refresh_solver() -> None:
                 indexes=indexes,
                 output=_SOLVER_OUTPUT,
                 subgraph_check_api=_SUBGRAPH_CHECK_API,
+                transitive=False,
             )
         except Exception as ecx:
             # If we get some errors from OpenShift master - do not retry. Rather schedule the remaining
