@@ -1,8 +1,7 @@
 thoth-graph-refresh-job
 -----------------------
 
-A job for scheduling solver to resolve dependency graphs of new packages and package analyzer for packages that are not 
-yet analyzed.
+A job for scheduling solver to resolve dependency graphs and package-analyzer to gather digests and ABI of new packages or packages not analyzed yet.
 
 Running the job locally
 =======================
@@ -30,7 +29,7 @@ in Thoth's middletier namespace.
 .. note::
 
   * graph-refresh job is run in Thoth's frontend namespace
-  * templates for solvers are picked from Thoth's infra namespace - see installed solvers endpoint on Management API for available solvers in the deployment
+  * templates for solvers and package analyzers are picked from Thoth's infra namespace - see installed solvers endpoint on Management API for available solvers in the deployment
   * solvers and package analyzers are scheduled in Thoth's middletier namespace
   * `workload operator <https://github.com/thoth-station/workload-operator>`_ makes sure solvers are run based on resources available in the middletier namespace
   * `graph sync scheduler <https://github.com/thoth-station/graph-sync-scheduler>`_ makes sure results of solver runs get synced into Thoth's graph database (raw JSON files are stored on Ceph)
