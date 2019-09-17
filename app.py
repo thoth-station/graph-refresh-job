@@ -132,8 +132,9 @@ def graph_refresh_solver() -> None:
                 indexes=indexes,
                 output=_SOLVER_OUTPUT,
                 subgraph_check_api=_SUBGRAPH_CHECK_API,
+                transitive=False,
             )
-        except Exception as ecx:
+        except Exception:
             # If we get some errors from OpenShift master - do not retry. Rather schedule the remaining
             # ones and try to schedule the given package in the next run.
             _LOGGER.exception(
@@ -180,7 +181,7 @@ def graph_refresh_package_analyzer() -> None:
                 index_url=url,
                 output=_PACKAGE_ANALYZER_OUTPUT,
             )
-        except Exception as ecx:
+        except Exception:
             # If we get some errors from OpenShift master - do not retry. Rather schedule the remaining
             # ones and try to schedule the given package in the next run.
             _LOGGER.exception(
