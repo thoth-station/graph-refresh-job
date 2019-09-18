@@ -211,8 +211,15 @@ def main():
     _LOGGER.debug("Debug mode is on")
 
     with _METRIC_RUNTIME.time():
-        graph_refresh_solver()
-        graph_refresh_package_analyzer()
+        if not bool(int(os.getenv("GRAPH_REFRESH_NO_SOLVERS", 0))):
+            graph_refresh_solver()
+        else:
+            _LOGGER.warning("Skipping scheduling of solvers based on user configuration")
+
+        if not bool(int(os.getenv("GRAPH_REFRESH_NO_PACKAGE_ANALYZERS", 0))):
+            graph_refresh_package_analyzer()
+        else:
+            _LOGGER.warning("Skipping scheduling of package-analyzers based on user configuration")
 
     if _THOTH_METRICS_PUSHGATEWAY_URL:
         try:
