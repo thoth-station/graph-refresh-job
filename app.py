@@ -109,52 +109,64 @@ def graph_refresh_solver() -> None:
     # Iterate over all registered solvers and gather packages which were not solved by them.
     for solver_name in _OPENSHIFT.get_solver_names():
         _LOGGER.info("Checking unsolved packages for solver %r", solver_name)
-        for package, version in _GRAPH_DB.retrieve_unsolved_python_packages(solver_name):
-            _LOGGER.info(f"Adding new package {package} in version {version}")
+        for package_name, version in _GRAPH_DB.retrieve_unsolved_python_packages(solver_name):
+            _LOGGER.info(f"Adding new package %r in version %r", package_name, version)
             _METRIC_PACKAGES_ADDED.inc()
-            packages.append((f"{package}=={version}", solver_name))
+            packages.append((package_name, version, solver_name))
 
     if not packages:
         _LOGGER.info("No unsolved packages found")
         return
 
     count = 0
-    for package, solver in packages:
-        try:
-            analysis_id = _OPENSHIFT.schedule_solver(
-                solver=solver,
-                debug=_LOG_SOLVER,
-                packages=package,
-                indexes=indexes,
-                output=_SOLVER_OUTPUT,
-                subgraph_check_api=_SUBGRAPH_CHECK_API,
-                transitive=False,
-            )
-        except Exception:
-            # If we get some errors from OpenShift master - do not retry. Rather schedule the remaining
-            # ones and try to schedule the given package in the next run.
-            _LOGGER.exception(
-                f"Failed to schedule new solver to solve package {package}, the graph refresh job will not "
-                "fail but will try to reschedule this in next run"
-            )
-            _METRIC_SOLVERS_UNSCHEDULED.labels(solver).inc()
-            continue
+    for package_name, package_version, solver_name in packages:
+        for index_url in indexes:
+            if _GRAPH_DB.python_package_version_exists(package_name, package_version, index_url, solver_name):
+                _LOGGER.debug(
+                    "Not scheduling solver %r as package %r in version %r was already solved for index %r",
+                    solver_name,
+                    package_name,
+                    package_version,
+                    index_url,
+                )
+                continue
+            try:
+                analysis_id = _OPENSHIFT.schedule_solver(
+                    solver=solver_name,
+                    debug=_LOG_SOLVER,
+                    packages=f"{package_name}=={package_version}",
+                    indexes=[index_url],
+                    output=_SOLVER_OUTPUT,
+                    subgraph_check_api=_SUBGRAPH_CHECK_API,
+                    transitive=False,
+                )
+            except Exception:
+                # If we get some errors from OpenShift master - do not retry. Rather schedule the remaining
+                # ones and try to schedule the given package in the next run.
+                _LOGGER.exception(
+                    f"Failed to schedule new solver to solve package {package_name} in version {package_version}, "
+                    "the graph refresh job will not fail but will try to reschedule this in next run"
+                )
+                _METRIC_SOLVERS_UNSCHEDULED.labels(solver_name).inc()
+                continue
 
-        _LOGGER.info(
-            "Scheduled solver %r for package %r, analysis is %r",
-            solver,
-            package,
-            analysis_id,
-        )
-        _METRIC_SOLVERS_SCHEDULED.labels(solver).inc()
-
-        count += 1
-        if _THOTH_GRAPH_REFRESH_EAGER_STOP and count >= _THOTH_GRAPH_REFRESH_EAGER_STOP:
             _LOGGER.info(
-                "Eager stop of scheduling new solver runs for unsolved package versions, packages scheduled: %d",
-                count,
+                "Scheduled solver %r for package %r in version %r from index %r, analysis is %r",
+                solver_name,
+                package_name,
+                package_version,
+                index_url,
+                analysis_id,
             )
-            return
+            _METRIC_SOLVERS_SCHEDULED.labels(solver_name).inc()
+
+            count += 1
+            if _THOTH_GRAPH_REFRESH_EAGER_STOP and count >= _THOTH_GRAPH_REFRESH_EAGER_STOP:
+                _LOGGER.info(
+                    "Eager stop of scheduling new solver runs for unsolved package versions, packages scheduled: %d",
+                    count,
+                )
+                return
 
 
 def graph_refresh_package_analyzer() -> None:
