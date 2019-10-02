@@ -78,10 +78,8 @@ objects:
                   name: graph-refresh
                   env:
                     - name: "THOTH_SOLVER_OUTPUT"
-                      # TODO: move these hardcoded of subgraph check api and solver output into cm
+                      # TODO: move these hardcoded values of solver output into cm
                       value: http://result-api/api/v1/solver-result
-                    - name: "THOTH_SUBGRAPH_CHECK_API"
-                      value: http://result-api/api/v1/subgraph-check
                     - name: "GRAPH_REFRESH_NO_SOLVERS"
                       value: "0"
                     - name: "GRAPH_REFRESH_NO_PACKAGE_ANALYZERS"
