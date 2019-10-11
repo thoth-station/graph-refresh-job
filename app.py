@@ -101,16 +101,15 @@ _METRIC_PACKAGE_ANALYZERS_UNSCHEDULED = Counter(
     registry=prometheus_registry,
 )
 # If set to non-zero value, the graph-refresh will be scheduled for only first N unsolved package-versions.
-_THOTH_GRAPH_REFRESH_EAGER_STOP = int(os.getenv("THOTH_GRAPH_REFRESH_EAGER_STOP") or 0)
+_THOTH_GRAPH_REFRESH_EAGER_STOP = int(os.getenv("THOTH_GRAPH_REFRESH_EAGER_STOP") or _GRAPH_DB.DEFAULT_COUNT)
 
 
 def graph_refresh_solver() -> None:
     """Schedule refresh for packages that are not yet analyzed by solver."""
-    if _THOTH_GRAPH_REFRESH_EAGER_STOP:
-        _LOGGER.info(
-            "Eager stop of scheduling new solver runs for unsolved package versions, packages scheduled: %d",
-            _THOTH_GRAPH_REFRESH_EAGER_STOP,
-        )
+    _LOGGER.info(
+        "Eager stop of scheduling new solver runs for unsolved package versions, packages scheduled: %d",
+        _THOTH_GRAPH_REFRESH_EAGER_STOP,
+    )
 
     indexes = list(_GRAPH_DB.get_python_package_index_urls())
 
@@ -139,38 +138,8 @@ def graph_refresh_solver() -> None:
         return
 
     for package_name, package_version, index_url, solver_name in packages:
-        if not index_url:
-            for index_url in indexes:
-                try:
-                    analysis_id = _OPENSHIFT.schedule_solver(
-                        solver=solver_name,
-                        debug=_LOG_SOLVER,
-                        packages=f"{package_name}=={package_version}",
-                        indexes=[index_url],
-                        output=_SOLVER_OUTPUT,
-                        subgraph_check_api=_SUBGRAPH_CHECK_API,
-                        transitive=False,
-                    )
-                except Exception:
-                    # If we get some errors from OpenShift master - do not retry. Rather schedule the remaining
-                    # ones and try to schedule the given package in the next run.
-                    _LOGGER.exception(
-                        f"Failed to schedule new solver to solve package {package_name} in version {package_version}, "
-                        "the graph refresh job will not fail but will try to reschedule this in next run"
-                    )
-                    _METRIC_SOLVERS_UNSCHEDULED.labels(solver_name).inc()
-                    continue
 
-                _LOGGER.info(
-                    "Scheduled solver %r for package %r in version %r from index %r, analysis is %r",
-                    solver_name,
-                    package_name,
-                    package_version,
-                    index_url,
-                    analysis_id,
-                )
-                _METRIC_SOLVERS_SCHEDULED.labels(solver_name).inc()
-        else:
+        for index_url in [index_url] if index_url is not None else indexes:
             try:
                 analysis_id = _OPENSHIFT.schedule_solver(
                     solver=solver_name,
@@ -203,7 +172,14 @@ def graph_refresh_solver() -> None:
 
 def graph_refresh_package_analyzer() -> None:
     """Schedule refresh for packages that are not yet analyzed by package analyzer."""
-    packages = _GRAPH_DB.retrieve_unanalyzed_python_package_versions()
+    _LOGGER.info(
+        "Eager stop of scheduling new package analyzer runs"
+        "for unanalyzed package versions, packages scheduled: %d",
+        _THOTH_GRAPH_REFRESH_EAGER_STOP,
+    )
+    packages = _GRAPH_DB.get_unanalyzed_python_package_versions(
+        count=_THOTH_GRAPH_REFRESH_EAGER_STOP
+    )
 
     if not packages:
         _LOGGER.info("No unanalyzed packages found")
