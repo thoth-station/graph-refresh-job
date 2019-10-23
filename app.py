@@ -47,7 +47,6 @@ _PACKAGE_ANALYZER_OUTPUT = os.getenv(
     "THOTH_PACKAGE_ANALYZER_OUTPUT",
     "http://result-api/api/v1/package-analysis-result"
 )
-_SUBGRAPH_CHECK_API = os.getenv("THOTH_SUBGRAPH_CHECK_API", "http://result-api/api/v1/subgraph-check")
 
 _LOG_SOLVER = os.environ.get("THOTH_LOG_SOLVER") == "DEBUG"
 THOTH_MY_NAMESPACE = os.getenv("NAMESPACE", "thoth-test-core")
@@ -137,7 +136,6 @@ def graph_refresh_solver() -> None:
                     packages=f"{package_name}=={package_version}",
                     indexes=[index_url],
                     output=_SOLVER_OUTPUT,
-                    subgraph_check_api=_SUBGRAPH_CHECK_API,
                     transitive=False,
                 )
             except Exception:
