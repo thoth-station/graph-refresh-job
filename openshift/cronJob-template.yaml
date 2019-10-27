@@ -7,12 +7,13 @@ metadata:
       This is Thoth Graph Refresh CronJob CronJob, this template is meant to be used by Bots,
       but could also be used by humans...
     openshift.io/display-name: "Thoth: Graph Refresh Job"
-    version: 0.7.1
+    version: 0.7.0
     tags: thoth,graph-refresh,ai-stacks,aistacks,graph
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
     template.openshift.io/long-description: >
       This template defines resources needed to deploy Thoth Graph Refresh Job CronJob to OpenShift.
     template.openshift.io/provider-display-name: "Red Hat, Inc."
+    thoth-station.ninja/template-version: 0.7.0
   labels:
     template: graph-refresh-cronjob
     app: thoth
@@ -54,6 +55,8 @@ objects:
     apiVersion: batch/v1beta1
     metadata:
       name: graph-refresh
+      annotations:
+        thoth-station.ninja/template-version: 0.7.0
       labels:
         app: thoth
         component: graph-refresh
