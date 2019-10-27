@@ -186,10 +186,7 @@ def graph_refresh_package_analyzer() -> None:
         return
 
     count = 0
-    for item in packages:
-        package = item["package_name"]
-        version = item["package_version"]
-        url = item["index_url"]
+    for package, version, url in packages:
         try:
             analysis_id = _OPENSHIFT.schedule_package_analyzer(
                 package_name=package,
