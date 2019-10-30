@@ -111,7 +111,7 @@ def graph_refresh_solver() -> None:
         _THOTH_GRAPH_REFRESH_EAGER_STOP,
     )
 
-    indexes = list(_GRAPH_DB.get_python_package_index_urls_all())
+    indexes = _GRAPH_DB.get_python_package_index_urls_all()
 
     packages = []
     # Iterate over all registered solvers and gather packages which were not solved by them.
