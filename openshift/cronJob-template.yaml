@@ -89,7 +89,7 @@ objects:
                       value: "0"
                     - name: THOTH_GRAPH_REFRESH_EAGER_STOP
                       # Stop after N scheduled solver runs per new package-version.
-                      value: "50"
+                      value: "200"
                     - name: KUBERNETES_API_URL
                       value: "https://kubernetes.default.svc.cluster.local"
                     - name: KUBERNETES_VERIFY_TLS
