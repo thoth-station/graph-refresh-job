@@ -144,7 +144,7 @@ def graph_refresh_solver() -> None:
                 analysis_id = _OPENSHIFT.schedule_solver(
                     solver=solver_name,
                     debug=_LOG_SOLVER,
-                    packages=f"{package_name}=={package_version}",
+                    packages=f"{package_name}==={package_version}",
                     indexes=[index_url],
                     output=_SOLVER_OUTPUT,
                     transitive=False,
