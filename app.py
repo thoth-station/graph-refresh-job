@@ -19,6 +19,7 @@
 
 import logging
 import os
+import random
 
 from prometheus_client import CollectorRegistry, Gauge, Counter, push_to_gateway
 
@@ -137,8 +138,10 @@ def graph_refresh_solver() -> None:
         _LOGGER.info("No unsolved packages found")
         return
 
-    for package_name, package_version, index_url, solver_name in packages:
+    # Shuffle not to be dependent on solver ordering.
+    random.shuffle(packages)
 
+    for package_name, package_version, index_url, solver_name in packages:
         for index_url in [index_url] if index_url is not None else indexes:
             try:
                 analysis_id = _OPENSHIFT.schedule_solver(
