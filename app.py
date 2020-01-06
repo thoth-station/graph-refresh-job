@@ -117,13 +117,16 @@ def graph_refresh_solver() -> None:
     packages = []
     # Iterate over all registered solvers and gather packages which were not solved by them.
     for solver_name in _OPENSHIFT.get_solver_names():
+        if len(packages) >= _THOTH_GRAPH_REFRESH_EAGER_STOP:
+            break
+
         _LOGGER.info("Checking unsolved packages for solver %r", solver_name)
         solver_info = _GRAPH_DB.parse_python_solver_name(solver_name)
         for package_name, version, index_url in _GRAPH_DB.get_unsolved_python_package_versions_all(
             os_name=solver_info["os_name"],
             os_version=solver_info["os_version"],
             python_version=solver_info["python_version"],
-            count=_THOTH_GRAPH_REFRESH_EAGER_STOP
+            count=_THOTH_GRAPH_REFRESH_EAGER_STOP - len(packages),
         ):
             _LOGGER.info(
                 f"Adding new package %r in version %r on index %r",
