@@ -153,6 +153,8 @@ objects:
                         secretKeyRef:
                           name: postgresql
                           key: database-name
+                    - name: THOTH_USE_ARGO
+                      value: "1"
                   resources:
                     requests:
                       memory: "256Mi"
