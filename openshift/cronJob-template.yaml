@@ -7,13 +7,13 @@ metadata:
       This is Thoth Graph Refresh CronJob CronJob, this template is meant to be used by Bots,
       but could also be used by humans...
     openshift.io/display-name: "Thoth: Graph Refresh Job"
-    version: 0.7.1
+    version: 0.7.2
     tags: thoth,graph-refresh,ai-stacks,aistacks,graph
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
     template.openshift.io/long-description: >
       This template defines resources needed to deploy Thoth Graph Refresh Job CronJob to OpenShift.
     template.openshift.io/provider-display-name: "Red Hat, Inc."
-    thoth-station.ninja/template-version: 0.7.1
+    thoth-station.ninja/template-version: 0.7.2
   labels:
     template: graph-refresh-cronjob
     app: thoth
@@ -56,7 +56,7 @@ objects:
     metadata:
       name: graph-refresh
       annotations:
-        thoth-station.ninja/template-version: 0.7.1
+        thoth-station.ninja/template-version: 0.7.2
       labels:
         app: thoth
         component: graph-refresh
@@ -155,6 +155,21 @@ objects:
                           key: database-name
                     - name: THOTH_USE_ARGO
                       value: "1"
+                    - name: THOTH_CEPH_BUCKET
+                      valueFrom:
+                        configMapKeyRef:
+                          key: ceph-bucket-name
+                          name: thoth
+                    - name: THOTH_CEPH_BUCKET_PREFIX
+                      valueFrom:
+                        configMapKeyRef:
+                          key: ceph-bucket-prefix
+                          name: thoth
+                    - name: THOTH_S3_ENDPOINT_URL
+                      valueFrom:
+                        configMapKeyRef:
+                          key: ceph-host
+                          name: thoth
                   resources:
                     requests:
                       memory: "256Mi"
