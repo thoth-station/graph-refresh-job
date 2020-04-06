@@ -115,8 +115,11 @@ def graph_refresh_solver() -> None:
     indexes = _GRAPH_DB.get_python_package_index_urls_all()
 
     packages = []
-    # Iterate over all registered solvers and gather packages which were not solved by them.
-    for solver_name in _OPENSHIFT.get_solver_names():
+    # Iterate over all registered solvers and gather packages which were not solved by them. Shuffle solvers
+    # not to block a solver on another one.
+    solver_names = _OPENSHIFT.get_solver_names()
+    random.shuffle(solver_names)
+    for solver_name in solver_names:
         if len(packages) >= _THOTH_GRAPH_REFRESH_EAGER_STOP:
             break
 
