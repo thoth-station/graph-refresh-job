@@ -102,7 +102,9 @@ _METRIC_PACKAGE_ANALYZERS_UNSCHEDULED = Counter(
     registry=prometheus_registry,
 )
 # If set to non-zero value, the graph-refresh will be scheduled for only first N unsolved package-versions.
-_THOTH_GRAPH_REFRESH_EAGER_STOP = int(os.getenv("THOTH_GRAPH_REFRESH_EAGER_STOP") or _GRAPH_DB.DEFAULT_COUNT)
+_THOTH_GRAPH_REFRESH_EAGER_STOP = int(
+    os.getenv("THOTH_GRAPH_REFRESH_EAGER_STOP") or _GRAPH_DB.DEFAULT_COUNT
+)
 
 
 def graph_refresh_solver() -> None:
@@ -114,7 +116,7 @@ def graph_refresh_solver() -> None:
 
     indexes = _GRAPH_DB.get_python_package_index_urls_all()
 
-    packages = []
+    packages: list = []
     # Iterate over all registered solvers and gather packages which were not solved by them. Shuffle solvers
     # not to block a solver on another one.
     solver_names = _OPENSHIFT.get_solver_names()
@@ -125,7 +127,11 @@ def graph_refresh_solver() -> None:
 
         _LOGGER.info("Checking unsolved packages for solver %r", solver_name)
         solver_info = _GRAPH_DB.parse_python_solver_name(solver_name)
-        for package_name, version, index_url in _GRAPH_DB.get_unsolved_python_package_versions_all(
+        for (
+            package_name,
+            version,
+            index_url,
+        ) in _GRAPH_DB.get_unsolved_python_package_versions_all(
             os_name=solver_info["os_name"],
             os_version=solver_info["os_version"],
             python_version=solver_info["python_version"],
