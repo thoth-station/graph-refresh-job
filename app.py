@@ -46,6 +46,7 @@ _OPENSHIFT = OpenShift()
 
 _LOGGER = logging.getLogger("thoth.graph_refresh_job")
 _LOG_SOLVER = os.environ.get("THOTH_LOG_SOLVER") == "DEBUG"
+_LOG_REVSOLVER = os.environ.get("THOTH_LOG_REVSOLVER") == "DEBUG"
 THOTH_MY_NAMESPACE = os.getenv("NAMESPACE", "thoth-test-core")
 
 _THOTH_METRICS_PUSHGATEWAY_URL = os.getenv("PROMETHEUS_PUSHGATEWAY_URL")
@@ -81,6 +82,18 @@ _METRIC_SOLVERS_UNSCHEDULED = Counter(
     "graph_refresh_job_solvers_unscheduled_total",
     "Number of Solvers failed to schedule.",
     ["solver"],
+    registry=prometheus_registry,
+)
+_METRIC_REVSOLVERS_SCHEDULED = Counter(
+    "graph_refresh_job_revsolvers_scheduled_total",
+    "Number of reverse solvers scheduled.",
+    [],
+    registry=prometheus_registry,
+)
+_METRIC_REVSOLVERS_UNSCHEDULED = Counter(
+    "graph_refresh_job_revsolvers_unscheduled_total",
+    "Number of reverse solvers failed to schedule.",
+    [],
     registry=prometheus_registry,
 )
 # If set to non-zero value, the graph-refresh will be scheduled for only first N unsolved package-versions.
@@ -135,6 +148,7 @@ def graph_refresh_solver() -> None:
     # Shuffle not to be dependent on solver ordering.
     random.shuffle(packages)
 
+    revsolver_packages_seen = set()
     for package_name, package_version, index_url, solver_name in packages:
         for index_url in [index_url] if index_url is not None else indexes:
             try:
@@ -164,6 +178,31 @@ def graph_refresh_solver() -> None:
                 analysis_id,
             )
             _METRIC_SOLVERS_SCHEDULED.labels(solver_name).inc()
+
+            if (package_name, package_version) not in revsolver_packages_seen:
+                try:
+                    analysis_id = _OPENSHIFT.schedule_revsolver(
+                        package_name=package_name,
+                        package_version=package_version,
+                        debug=_LOG_REVSOLVER,
+                    )
+                except Exception:
+                    _LOGGER.exception(
+                        "Failed to schedule reverse solver for %r in version %r",
+                        package_name,
+                        package_version,
+                    )
+                    _METRIC_REVSOLVERS_UNSCHEDULED.inc()
+                    continue
+
+                _LOGGER.info(
+                    "Scheduled reverse solver for package %r in version %r, analysis is %r",
+                    package_name,
+                    package_version,
+                    analysis_id,
+                )
+                _METRIC_REVSOLVERS_SCHEDULED.inc()
+                revsolver_packages_seen.add((package_name, package_version))
 
 
 def main():
