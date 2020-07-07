@@ -46,9 +46,6 @@ _OPENSHIFT = OpenShift()
 
 _LOGGER = logging.getLogger("thoth.graph_refresh_job")
 
-_SOLVER_OUTPUT = os.getenv(
-    "THOTH_SOLVER_OUTPUT", "http://result-api/api/v1/solver-result"
-)
 _PACKAGE_ANALYZER_OUTPUT = os.getenv(
     "THOTH_PACKAGE_ANALYZER_OUTPUT", "http://result-api/api/v1/package-analysis-result"
 )
@@ -164,7 +161,6 @@ def graph_refresh_solver() -> None:
                     debug=_LOG_SOLVER,
                     packages=f"{package_name}==={package_version}",
                     indexes=[index_url],
-                    output=_SOLVER_OUTPUT,
                     transitive=False,
                 )
             except Exception:
