@@ -45,7 +45,6 @@ _GRAPH_DB.connect()
 _OPENSHIFT = OpenShift()
 
 _LOGGER = logging.getLogger("thoth.graph_refresh_job")
-
 _LOG_SOLVER = os.environ.get("THOTH_LOG_SOLVER") == "DEBUG"
 THOTH_MY_NAMESPACE = os.getenv("NAMESPACE", "thoth-test-core")
 
