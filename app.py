@@ -31,7 +31,10 @@ from thoth.storages import __version__ as __storage__version__
 from thoth.storages import GraphDatabase
 
 
-__version__ = f"0.6.1+storage.{__storage__version__}.common.{__common__version__}"
+__version__ = "0.1.0"
+__service_version__ = (
+    f"{__version__}+storage.{__storage__version__}.common.{__common__version__}"
+)
 
 init_logging()
 prometheus_registry = CollectorRegistry()
@@ -71,7 +74,7 @@ _METRIC_INFO = Gauge(
     ["env", "version"],
     registry=prometheus_registry,
 )
-_METRIC_INFO.labels(THOTH_MY_NAMESPACE, __version__).inc()
+_METRIC_INFO.labels(THOTH_MY_NAMESPACE, __service_version__).inc()
 
 _METRIC_PACKAGES_ADDED = Counter(
     "graph_refresh_job_packages_added_total",
@@ -239,7 +242,7 @@ def graph_refresh_package_analyzer() -> None:
 
 def main():
     """Perform graph refresh job."""
-    _LOGGER.info(f"Version v{__version__}")
+    _LOGGER.info(f"Thoth graph-refresh-job v{__service_version__}")
     _LOGGER.debug("Debug mode is on")
 
     with _METRIC_RUNTIME.time():
