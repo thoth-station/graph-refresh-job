@@ -46,13 +46,6 @@ _OPENSHIFT = OpenShift()
 
 _LOGGER = logging.getLogger("thoth.graph_refresh_job")
 
-_PACKAGE_ANALYZER_OUTPUT = os.getenv(
-    "THOTH_PACKAGE_ANALYZER_OUTPUT", "http://result-api/api/v1/package-analysis-result"
-)
-_SUBGRAPH_CHECK_API = os.getenv(
-    "THOTH_SUBGRAPH_CHECK_API", "http://result-api/api/v1/subgraph-check"
-)
-
 _LOG_SOLVER = os.environ.get("THOTH_LOG_SOLVER") == "DEBUG"
 THOTH_MY_NAMESPACE = os.getenv("NAMESPACE", "thoth-test-core")
 
@@ -89,16 +82,6 @@ _METRIC_SOLVERS_UNSCHEDULED = Counter(
     "graph_refresh_job_solvers_unscheduled_total",
     "Number of Solvers failed to schedule.",
     ["solver"],
-    registry=prometheus_registry,
-)
-_METRIC_PACKAGE_ANALYZERS_SCHEDULED = Counter(
-    "graph_refresh_job_package_analyzers_scheduled_total",
-    "Number of Package Analyzers scheduled.",
-    registry=prometheus_registry,
-)
-_METRIC_PACKAGE_ANALYZERS_UNSCHEDULED = Counter(
-    "graph_refresh_job_package_analyzers_unscheduled_total",
-    "Number of Package Analyzers failed to schedule.",
     registry=prometheus_registry,
 )
 # If set to non-zero value, the graph-refresh will be scheduled for only first N unsolved package-versions.
@@ -184,58 +167,6 @@ def graph_refresh_solver() -> None:
             _METRIC_SOLVERS_SCHEDULED.labels(solver_name).inc()
 
 
-def graph_refresh_package_analyzer() -> None:
-    """Schedule refresh for packages that are not yet analyzed by package analyzer."""
-    _LOGGER.info(
-        "Eager stop of scheduling new package analyzer runs"
-        "for unanalyzed package versions, packages scheduled: %d",
-        _THOTH_GRAPH_REFRESH_EAGER_STOP,
-    )
-    packages = _GRAPH_DB.get_unanalyzed_python_package_versions_all(
-        count=_THOTH_GRAPH_REFRESH_EAGER_STOP
-    )
-
-    if not packages:
-        _LOGGER.info("No unanalyzed packages found")
-        return
-
-    count = 0
-    for package, version, url in packages:
-        try:
-            analysis_id = _OPENSHIFT.schedule_package_analyzer(
-                package_name=package,
-                package_version=version,
-                index_url=url,
-                output=_PACKAGE_ANALYZER_OUTPUT,
-            )
-        except Exception:
-            # If we get some errors from OpenShift master - do not retry. Rather schedule the remaining
-            # ones and try to schedule the given package in the next run.
-            _LOGGER.exception(
-                f"Failed to schedule new package analyzer to analyzer package {package} in version {version}"
-                f"from {url}, the graph refresh job will not fail but will try to reschedule this in next run"
-            )
-            _METRIC_PACKAGE_ANALYZERS_UNSCHEDULED.inc()
-            continue
-
-        _LOGGER.info(
-            "Scheduled package analyzer for package %r, version %r, index_url %r, analysis is %r",
-            package,
-            version,
-            url,
-            analysis_id,
-        )
-        _METRIC_PACKAGE_ANALYZERS_SCHEDULED.inc()
-
-        count += 1
-        if _THOTH_GRAPH_REFRESH_EAGER_STOP and count >= _THOTH_GRAPH_REFRESH_EAGER_STOP:
-            _LOGGER.info(
-                "Eager stop of scheduling new package analyzer runs for unanalyzed packages, packages scheduled: %d",
-                count,
-            )
-            return
-
-
 def main():
     """Perform graph refresh job."""
     _LOGGER.info(f"Thoth graph-refresh-job v{__service_version__}")
@@ -247,13 +178,6 @@ def main():
         else:
             _LOGGER.warning(
                 "Skipping scheduling of solvers based on user configuration"
-            )
-
-        if not bool(int(os.getenv("GRAPH_REFRESH_NO_PACKAGE_ANALYZERS", 0))):
-            graph_refresh_package_analyzer()
-        else:
-            _LOGGER.warning(
-                "Skipping scheduling of package-analyzers based on user configuration"
             )
 
     if _THOTH_METRICS_PUSHGATEWAY_URL:
