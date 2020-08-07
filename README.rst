@@ -29,8 +29,8 @@ in Thoth's middletier namespace.
 .. note::
 
   * graph-refresh job is run in Thoth's frontend namespace
-  * templates for solvers and package analyzers are picked from Thoth's infra namespace - see installed solvers endpoint on Management API for available solvers in the deployment
-  * solvers and package analyzers are scheduled in Thoth's middletier namespace
+  * templates for solvers are picked from Thoth's infra namespace - see installed solvers endpoint on Management API for available solvers in the deployment
+  * solvers are scheduled in Thoth's middletier namespace
   * kafka producer ensures that the messages to schedule solvers and reverse solvers(revsolvers) are sent to the kafka broker
 
 Packages which are not resolved yet might be coming from:
