@@ -121,7 +121,7 @@ def graph_refresh_solver() -> None:
             break
 
         _LOGGER.info("Checking unsolved packages for solver %r", solver_name)
-        solver_info = _GRAPH_DB.parse_python_solver_name(solver_name)
+        solver_info = _OPENSHIFT.parse_python_solver_name(solver_name)
         for (
             package_name,
             version,
