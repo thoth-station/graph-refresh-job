@@ -419,3 +419,19 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 * Add OpenShift templates
 * Initial implementation
 * Use reStructuredText for README file
+
+## Release 0.1.2 (2020-08-18T16:30:53)
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.0 to 0.25.1 (#452)
+* :pushpin: Automatic update of dependency thoth-common from 0.16.0 to 0.16.1 (#451)
+* Readme (#444)
+* :pushpin: Automatic update of dependency thoth-storages from 0.24.5 to 0.25.0 (#447)
+* :pushpin: Automatic update of dependency thoth-storages from 0.24.5 to 0.25.0 (#446)
+* :pushpin: Automatic update of dependency thoth-common from 0.14.2 to 0.16.0 (#445)
+* :pushpin: Automatic update of dependency thoth-storages from 0.24.0 to 0.24.5 (#443)
+* :pushpin: Automatic update of dependency thoth-storages from 0.24.0 to 0.24.5 (#442)
+* :pushpin: Automatic update of dependency thoth-common from 0.14.1 to 0.14.2 (#441)
+* :pushpin: Automatic update of dependency thoth-storages from 0.24.0 to 0.24.5 (#440)
+* :pushpin: Automatic update of dependency thoth-storages from 0.24.0 to 0.24.5 (#439)
+* :pushpin: Automatic update of dependency thoth-common from 0.14.1 to 0.14.2 (#438)
+* :pushpin: Automatic update of dependency thoth-common from 0.14.1 to 0.14.2 (#437)
+* :pushpin: Automatic update of dependency thoth-common from 0.14.1 to 0.14.2 (#436)
