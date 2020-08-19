@@ -53,7 +53,7 @@ _GRAPH_DB.connect()
 _OPENSHIFT = OpenShift()
 
 prometheus_registry = CollectorRegistry()
-THOTH_MY_NAMESPACE = os.getenv("NAMESPACE", "thoth-test-core")
+THOTH_MY_NAMESPACE = os.getenv("NAMESPACE")
 
 # Metrics Exporter Metrics
 _METRIC_INFO = Gauge(
