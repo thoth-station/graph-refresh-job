@@ -42,6 +42,7 @@ from version import __version__
 __service_version__ = f"{__version__}+storage.{__storage__version__}.common.{__common__version__}.messaging.{__messaging__version__}"  # noqa: E501
 
 _LOGGER = logging.getLogger("thoth.graph_refresh_job")
+_LOGGER.info("Thoth graph refresh producer v%s", __service_version__)
 
 app = MessageBase().app
 
