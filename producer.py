@@ -54,6 +54,7 @@ _OPENSHIFT = OpenShift()
 
 prometheus_registry = CollectorRegistry()
 THOTH_MY_NAMESPACE = os.getenv("NAMESPACE")
+COMPONENT_NAME = "graph-refresh-job"
 
 # Metrics Exporter Metrics
 _METRIC_INFO = Gauge(
@@ -118,6 +119,8 @@ async def main() -> None:
                             package_version=package_version,
                             index_url=[index_url],
                             solver=solver_name,
+                            component_name=COMPONENT_NAME,
+                            service_version=__service_version__
                         )
                     )
                 )
@@ -142,6 +145,8 @@ async def main() -> None:
                             unrevsolved_package.MessageContents(
                                 package_name=package_name,
                                 package_version=package_version,
+                                component_name=COMPONENT_NAME,
+                                service_version=__service_version__
                             )
                         )
                     )
