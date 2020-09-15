@@ -49,6 +49,7 @@ app = MessageBase().app
 init_logging()
 _GRAPH_DB = GraphDatabase()
 _GRAPH_DB.connect()
+_COUNT = int(os.getenv("THOTH_GRAPH_REFRESH_COUNT", GraphDatabase.DEFAULT_COUNT)) or None
 
 _OPENSHIFT = OpenShift()
 
@@ -69,6 +70,9 @@ _METRIC_INFO.labels(THOTH_MY_NAMESPACE, __service_version__).inc()
 @app.command()
 async def main() -> None:
     """Produce Kafka messages depending on the knowledge that needs to be acquired for a certain package."""
+    if _COUNT:
+        _LOGGER.info("Graph refresh will produce at most %d messages", _COUNT)
+
     indexes = _GRAPH_DB.get_python_package_index_urls_all()
     packages: list = []
     # Iterate over all registered solvers and gather packages which were not solved by them. Shuffle solvers
@@ -86,6 +90,7 @@ async def main() -> None:
             os_name=solver_info["os_name"],
             os_version=solver_info["os_version"],
             python_version=solver_info["python_version"],
+            count=_COUNT,
         ):
             _LOGGER.info(
                 "Adding new package %r in version %r on index %r",
