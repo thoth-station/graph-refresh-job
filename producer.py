@@ -198,7 +198,7 @@ async def main() -> None:
             )
         except Exception as identifier:
             _LOGGER.exception(
-                "Failed to publish SI Unanalyzed package message with the following error message: %r",
+                "Failed to publish SI unanalyzed package message with the following error message: %r",
                 identifier,
             )
 
