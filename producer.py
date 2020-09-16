@@ -33,6 +33,7 @@ from prometheus_client import CollectorRegistry, Gauge
 from thoth.messaging import MessageBase
 from thoth.messaging.unresolved_package import UnresolvedPackageMessage
 from thoth.messaging.unrevsolved_package import UnrevsolvedPackageMessage
+from thoth.messaging.si_unanalyzed_package import SIUnanalyzedPackageMessage
 from thoth.common import __version__ as __common__version__
 from thoth.storages import __version__ as __storage__version__
 from thoth.messaging import __version__ as __messaging__version__
@@ -49,7 +50,9 @@ app = MessageBase().app
 init_logging()
 _GRAPH_DB = GraphDatabase()
 _GRAPH_DB.connect()
-_COUNT = int(os.getenv("THOTH_GRAPH_REFRESH_COUNT", GraphDatabase.DEFAULT_COUNT)) or None
+_COUNT = (
+    int(os.getenv("THOTH_GRAPH_REFRESH_COUNT", GraphDatabase.DEFAULT_COUNT)) or None
+)
 
 _OPENSHIFT = OpenShift()
 
@@ -113,6 +116,8 @@ async def main() -> None:
     unresolved_package = UnresolvedPackageMessage()
     # Class for reverse solver messages
     unrevsolved_package = UnrevsolvedPackageMessage()
+    # Class for SI Unanalyzed package messages
+    si_unanalyzed_package = SIUnanalyzedPackageMessage()
 
     for package_name, package_version, index_url, solver_name in packages:
         for index_url in [index_url] if index_url is not None else indexes:
@@ -125,12 +130,12 @@ async def main() -> None:
                             index_url=[index_url],
                             solver=solver_name,
                             component_name=COMPONENT_NAME,
-                            service_version=__service_version__
+                            service_version=__service_version__,
                         )
                     )
                 )
                 _LOGGER.info(
-                    "Published message for solver %r for package %r in version %r from index %r, analysis is %r",
+                    "Published message for solver %r for package %r in version %r from index %r",
                     solver_name,
                     package_name,
                     package_version,
@@ -151,12 +156,12 @@ async def main() -> None:
                                 package_name=package_name,
                                 package_version=package_version,
                                 component_name=COMPONENT_NAME,
-                                service_version=__service_version__
+                                service_version=__service_version__,
                             )
                         )
                     )
                     _LOGGER.info(
-                        "Published message for reverse solver message for package %r in version %r, analysis is %r",
+                        "Published message for reverse solver message for package %r in version %r",
                         package_name,
                         package_version,
                     )
@@ -166,6 +171,36 @@ async def main() -> None:
                         "Failed to publish reverse solver message with the following error message: %r",
                         identifier,
                     )
+
+    # Lets find the packages solved by solver, but unsolved by SI.
+    for (
+        package_name,
+        package_version,
+        index_url,
+    ) in _GRAPH_DB.get_si_unanalyzed_python_package_versions_all(count=_COUNT):
+        try:
+            async_tasks.append(
+                si_unanalyzed_package.publish_to_topic(
+                    si_unanalyzed_package.MessageContents(
+                        package_name=package_name,
+                        package_version=package_version,
+                        index_url=index_url,
+                        component_name=COMPONENT_NAME,
+                        service_version=__service_version__,
+                    )
+                )
+            )
+            _LOGGER.info(
+                "Published message for SI unanalyzed package message for package %r in version %r, index_url is %r",
+                package_name,
+                package_version,
+                index_url,
+            )
+        except Exception as identifier:
+            _LOGGER.exception(
+                "Failed to publish SI unanalyzed package message with the following error message: %r",
+                identifier,
+            )
 
     # Finally gather all the async co-routines
     await asyncio.gather(*async_tasks)
