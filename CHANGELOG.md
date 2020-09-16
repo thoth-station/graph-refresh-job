@@ -435,3 +435,27 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 * :pushpin: Automatic update of dependency thoth-common from 0.14.1 to 0.14.2 (#438)
 * :pushpin: Automatic update of dependency thoth-common from 0.14.1 to 0.14.2 (#437)
 * :pushpin: Automatic update of dependency thoth-common from 0.14.1 to 0.14.2 (#436)
+
+## Release 0.2.0 (2020-09-16T13:09:23)
+### Features
+* Add env var to configure number of messages sent (#474)
+* Update .thoth.yaml (#468)
+* Initial producer to replace app.py (#448)
+* parse_python_solver_name is function of thoth-common (#456)
+### Improvements
+* Added producer logic for sending unanalyzed si packages (#478)
+* Added component name and service version to messages (#466)
+### Automatic Updates
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.8 to 0.25.9 (#479)
+* :pushpin: Automatic update of dependency thoth-messaging from 0.7.0 to 0.7.2 (#477)
+* :pushpin: Automatic update of dependency thoth-messaging from 0.7.0 to 0.7.2 (#476)
+* :pushpin: Automatic update of dependency thoth-common from 0.18.3 to 0.19.0 (#475)
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.5 to 0.25.8 (#472)
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.5 to 0.25.8 (#471)
+* :pushpin: Automatic update of dependency thoth-common from 0.17.3 to 0.18.3 (#470)
+* :pushpin: Automatic update of dependency thoth-messaging from 0.6.5 to 0.7.0 (#465)
+* :pushpin: Automatic update of dependency thoth-common from 0.16.1 to 0.17.3 (#464)
+* :pushpin: Automatic update of dependency thoth-messaging from 0.6.4 to 0.6.5 (#461)
+* :pushpin: Automatic update of dependency thoth-messaging from 0.6.4 to 0.6.5 (#460)
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.2 to 0.25.5 (#459)
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.1 to 0.25.2 (#458)
