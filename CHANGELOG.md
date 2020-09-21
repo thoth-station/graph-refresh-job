@@ -459,3 +459,13 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 * :pushpin: Automatic update of dependency thoth-messaging from 0.6.4 to 0.6.5 (#460)
 * :pushpin: Automatic update of dependency thoth-storages from 0.25.2 to 0.25.5 (#459)
 * :pushpin: Automatic update of dependency thoth-storages from 0.25.1 to 0.25.2 (#458)
+
+## Release 0.2.1 (2020-09-21T17:25:23)
+### Features
+* Add missing aicoe yaml (#484)
+### Automatic Updates
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.10 to 0.25.11 (#491)
+* :pushpin: Automatic update of dependency thoth-messaging from 0.7.3 to 0.7.6 (#489)
+* :pushpin: Automatic update of dependency thoth-messaging from 0.7.2 to 0.7.3 (#487)
+* :pushpin: Automatic update of dependency thoth-messaging from 0.7.2 to 0.7.3 (#486)
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.9 to 0.25.10 (#485)
