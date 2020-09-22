@@ -6,12 +6,12 @@ A job for scheduling solver to resolve dependency graphs and package-analyzer to
 Running the job locally
 =======================
 
-You can run this job locally. Run a faust consumer and then run the faust producer with help of app.sh. 
+You can run this job locally. Run a faust consumer and then run the faust producer with help of app.sh.
 
 Notes on configuring producer.
 ==============================
 The producer currently produces three types of messages i.e. solver, revsolver and unanalyzed-si messages.
-These can be disabled by passing the respective env variables respectively - 
+These can be disabled by passing the respective env variables respectively -
 
 * THOTH_GRAPH_REFRESH_SOLVER=0
 * THOTH_GRAPH_REFRESH_REVSOLVER=0

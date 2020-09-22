@@ -59,9 +59,9 @@ _OPENSHIFT = OpenShift()
 prometheus_registry = CollectorRegistry()
 THOTH_MY_NAMESPACE = os.getenv("NAMESPACE")
 # Conditional scheduling, by default we schedule everything.
-THOTH_GRAPH_REFRESH_SOLVER=int(os.getenv("THOTH_GRAPH_REFRESH_SOLVER", 1))
-THOTH_GRAPH_REFRESH_REVSOLVER=int(os.getenv("THOTH_GRAPH_REFRESH_REVSOLVER", 1))
-THOTH_GRAPH_REFRESH_SECURITY=int(os.getenv("THOTH_GRAPH_REFRESH_SECURITY", 1))
+THOTH_GRAPH_REFRESH_SOLVER = int(os.getenv("THOTH_GRAPH_REFRESH_SOLVER", 1))
+THOTH_GRAPH_REFRESH_REVSOLVER = int(os.getenv("THOTH_GRAPH_REFRESH_REVSOLVER", 1))
+THOTH_GRAPH_REFRESH_SECURITY = int(os.getenv("THOTH_GRAPH_REFRESH_SECURITY", 1))
 COMPONENT_NAME = "graph-refresh-job"
 
 # Metrics Exporter Metrics
