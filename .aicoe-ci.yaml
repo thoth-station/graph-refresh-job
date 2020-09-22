@@ -1,4 +1,3 @@
-
 check:
   - thoth-precommit
   - thoth-build
@@ -7,7 +6,7 @@ build:
   build-stratergy: Source
   registry: "quay.io"
   registry-org: "thoth-station"
-  registry-project: "graph-refresh"
+  registry-project: "graph-refresh-job"
   registry-secret: "thoth-station-thoth-pusher-secret"
 deploy:
   project-org: "thoth-station"
