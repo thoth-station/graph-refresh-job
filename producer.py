@@ -62,9 +62,13 @@ THOTH_MY_NAMESPACE = os.getenv("NAMESPACE")
 THOTH_GRAPH_REFRESH_SOLVER = int(os.getenv("THOTH_GRAPH_REFRESH_SOLVER", 1))
 _LOGGER.info("Schedule Solver Messages set to - %r", THOTH_GRAPH_REFRESH_SOLVER)
 THOTH_GRAPH_REFRESH_REVSOLVER = int(os.getenv("THOTH_GRAPH_REFRESH_REVSOLVER", 1))
-_LOGGER.info("Schedule Reverse Solver Messages set to - %r", THOTH_GRAPH_REFRESH_REVSOLVER)
+_LOGGER.info(
+    "Schedule Reverse Solver Messages set to - %r", THOTH_GRAPH_REFRESH_REVSOLVER
+)
 THOTH_GRAPH_REFRESH_SECURITY = int(os.getenv("THOTH_GRAPH_REFRESH_SECURITY", 1))
-_LOGGER.info("Schedule Unanalyzed SI Messages set to - %r", THOTH_GRAPH_REFRESH_SECURITY)
+_LOGGER.info(
+    "Schedule Unanalyzed SI Messages set to - %r", THOTH_GRAPH_REFRESH_SECURITY
+)
 COMPONENT_NAME = "graph-refresh-job"
 
 # Metrics Exporter Metrics
