@@ -6,18 +6,19 @@ A job for scheduling solver to resolve dependency graphs and package-analyzer to
 Running the job locally
 =======================
 
-You can run this job locally. The job will talk to OpenShift API to schedule
-jobs in Thoth's middletier namespace and will check for packages which were not
-analyzed yet by talking to a cluster Dgraph's instance:
+You can run this job locally. Run a faust consumer and then run the faust producer with help of app.sh.
+The steps to run the consumer is well documented here - `link <https://github.com/thoth-station/messaging/#development-and-testing>`_.
+You can run the producer as - `faust -A producer main`
 
-.. code-block:: console
+Notes on configuring producer.
+==============================
+The producer currently produces three types of messages i.e. solver, revsolver and unanalyzed-si messages.
+These can be disabled by passing the respective env variables -
 
-  $ pipenv install  # Install all the requirements
-  $ oc login <cluster-url>  # Make sure you are logged in
-  $ KUBERNETES_VERIFY_TLS=0 THOTH_INFRA_NAMESPACE=thoth-test-core GRAPH_SERVICE_HOST=graph.test.thoth-station.ninja GRAPH_TLS_PATH=./tls-test pipenv run python3 ./app.py
-
-You need to obtain TLS certificates in order to talk to a cluster graph
-database and place them into `./tls-test` directory as shown above.
+* THOTH_GRAPH_REFRESH_SOLVER=0
+* THOTH_GRAPH_REFRESH_REVSOLVER=0
+* THOTH_GRAPH_REFRESH_SECURITY=0
+* THOTH_GRAPH_REFRESH_COUNT=<GraphDatabase.DEFAULT_COUNT> (This restricts the number of messages per solver for solver messages and the total number of messages generated for security and revsolver.)
 
 Insights to graph-refresh job
 =============================

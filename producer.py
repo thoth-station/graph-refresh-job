@@ -58,6 +58,17 @@ _OPENSHIFT = OpenShift()
 
 prometheus_registry = CollectorRegistry()
 THOTH_MY_NAMESPACE = os.getenv("NAMESPACE")
+# Conditional scheduling, by default we schedule everything.
+THOTH_GRAPH_REFRESH_SOLVER = int(os.getenv("THOTH_GRAPH_REFRESH_SOLVER", 1))
+_LOGGER.info("Schedule Solver Messages set to - %r", THOTH_GRAPH_REFRESH_SOLVER)
+THOTH_GRAPH_REFRESH_REVSOLVER = int(os.getenv("THOTH_GRAPH_REFRESH_REVSOLVER", 1))
+_LOGGER.info(
+    "Schedule Reverse Solver Messages set to - %r", THOTH_GRAPH_REFRESH_REVSOLVER
+)
+THOTH_GRAPH_REFRESH_SECURITY = int(os.getenv("THOTH_GRAPH_REFRESH_SECURITY", 1))
+_LOGGER.info(
+    "Schedule Unanalyzed SI Messages set to - %r", THOTH_GRAPH_REFRESH_SECURITY
+)
 COMPONENT_NAME = "graph-refresh-job"
 
 # Metrics Exporter Metrics
@@ -70,13 +81,8 @@ _METRIC_INFO = Gauge(
 _METRIC_INFO.labels(THOTH_MY_NAMESPACE, __service_version__).inc()
 
 
-@app.command()
-async def main() -> None:
-    """Produce Kafka messages depending on the knowledge that needs to be acquired for a certain package."""
-    if _COUNT:
-        _LOGGER.info("Graph refresh will produce at most %d messages", _COUNT)
-
-    indexes = _GRAPH_DB.get_python_package_index_urls_all()
+def _unsolved_packages(indexes: list) -> list:
+    """Find packages that are not solved."""
     packages: list = []
     # Iterate over all registered solvers and gather packages which were not solved by them. Shuffle solvers
     # not to block a solver on another one.
@@ -102,10 +108,35 @@ async def main() -> None:
                 index_url,
             )
             packages.append((package_name, version, index_url, solver_name))
+    return packages
+
+
+@app.command()
+async def main() -> None:
+    """Produce Kafka messages depending on the knowledge that needs to be acquired for a certain package."""
+    if _COUNT:
+        _LOGGER.info(
+            "Graph refresh will produce at most %d messages per solver.", _COUNT
+        )
+
+    packages: list = []
+    if not any(
+        [
+            THOTH_GRAPH_REFRESH_SOLVER,
+            THOTH_GRAPH_REFRESH_REVSOLVER,
+            THOTH_GRAPH_REFRESH_SECURITY,
+        ]
+    ):
+        _LOGGER.info("All messages for Graph-refresh-job are disabled.")
+        return
+
+    # We dont fetch unsolved packages if both solver and revsolver messages are disabled.
+    if THOTH_GRAPH_REFRESH_SOLVER or THOTH_GRAPH_REFRESH_REVSOLVER:
+        indexes = _GRAPH_DB.get_python_package_index_urls_all()
+        packages = _unsolved_packages(indexes)
 
     if not packages:
         _LOGGER.info("No unsolved packages found")
-        return
 
     # Shuffle not to be dependent on solver message ordering.
     random.shuffle(packages)
@@ -120,34 +151,36 @@ async def main() -> None:
     si_unanalyzed_package = SIUnanalyzedPackageMessage()
 
     for package_name, package_version, index_url, solver_name in packages:
-        for index_url in [index_url] if index_url is not None else indexes:
-            try:
-                async_tasks.append(
-                    unresolved_package.publish_to_topic(
-                        unresolved_package.MessageContents(
-                            package_name=package_name,
-                            package_version=package_version,
-                            index_url=[index_url],
-                            solver=solver_name,
-                            component_name=COMPONENT_NAME,
-                            service_version=__service_version__,
+        if THOTH_GRAPH_REFRESH_SOLVER:
+            for index_url in [index_url] if index_url is not None else indexes:
+                try:
+                    async_tasks.append(
+                        unresolved_package.publish_to_topic(
+                            unresolved_package.MessageContents(
+                                package_name=package_name,
+                                package_version=package_version,
+                                index_url=[index_url],
+                                solver=solver_name,
+                                component_name=COMPONENT_NAME,
+                                service_version=__service_version__,
+                            )
                         )
                     )
-                )
-                _LOGGER.info(
-                    "Published message for solver %r for package %r in version %r from index %r",
-                    solver_name,
-                    package_name,
-                    package_version,
-                    index_url,
-                )
-            except Exception as identifier:
-                _LOGGER.exception(
-                    "Failed to publish solver message with the following error message: %r",
-                    identifier,
-                )
+                    _LOGGER.info(
+                        "Published message for solver %r for package %r in version %r from index %r",
+                        solver_name,
+                        package_name,
+                        package_version,
+                        index_url,
+                    )
+                except Exception as identifier:
+                    _LOGGER.exception(
+                        "Failed to publish solver message with the following error message: %r",
+                        identifier,
+                    )
 
-            # Send reverse solver message if not done for this packge, package_version
+        # Send reverse solver message if not done for this packge, package_version
+        if THOTH_GRAPH_REFRESH_REVSOLVER:
             if (package_name, package_version) not in revsolver_packages_seen:
                 try:
                     async_tasks.append(
@@ -173,34 +206,35 @@ async def main() -> None:
                     )
 
     # Lets find the packages solved by solver, but unsolved by SI.
-    for (
-        package_name,
-        package_version,
-        index_url,
-    ) in _GRAPH_DB.get_si_unanalyzed_python_package_versions_all(count=_COUNT):
-        try:
-            async_tasks.append(
-                si_unanalyzed_package.publish_to_topic(
-                    si_unanalyzed_package.MessageContents(
-                        package_name=package_name,
-                        package_version=package_version,
-                        index_url=index_url,
-                        component_name=COMPONENT_NAME,
-                        service_version=__service_version__,
+    if THOTH_GRAPH_REFRESH_SECURITY:
+        for (
+            package_name,
+            package_version,
+            index_url,
+        ) in _GRAPH_DB.get_si_unanalyzed_python_package_versions_all(count=_COUNT):
+            try:
+                async_tasks.append(
+                    si_unanalyzed_package.publish_to_topic(
+                        si_unanalyzed_package.MessageContents(
+                            package_name=package_name,
+                            package_version=package_version,
+                            index_url=index_url,
+                            component_name=COMPONENT_NAME,
+                            service_version=__service_version__,
+                        )
                     )
                 )
-            )
-            _LOGGER.info(
-                "Published message for SI unanalyzed package message for package %r in version %r, index_url is %r",
-                package_name,
-                package_version,
-                index_url,
-            )
-        except Exception as identifier:
-            _LOGGER.exception(
-                "Failed to publish SI unanalyzed package message with the following error message: %r",
-                identifier,
-            )
+                _LOGGER.info(
+                    "Published message for SI unanalyzed package message for package %r in version %r, index_url is %r",
+                    package_name,
+                    package_version,
+                    index_url,
+                )
+            except Exception as identifier:
+                _LOGGER.exception(
+                    "Failed to publish SI unanalyzed package message with the following error message: %r",
+                    identifier,
+                )
 
     # Finally gather all the async co-routines
     await asyncio.gather(*async_tasks)
