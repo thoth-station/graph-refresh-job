@@ -7,16 +7,18 @@ Running the job locally
 =======================
 
 You can run this job locally. Run a faust consumer and then run the faust producer with help of app.sh.
+The steps to run the consumer is well documented here - `link <https://github.com/thoth-station/messaging/#development-and-testing>`_.
+You can run the producer as - `faust -A producer main`
 
 Notes on configuring producer.
 ==============================
 The producer currently produces three types of messages i.e. solver, revsolver and unanalyzed-si messages.
-These can be disabled by passing the respective env variables respectively -
+These can be disabled by passing the respective env variables -
 
 * THOTH_GRAPH_REFRESH_SOLVER=0
 * THOTH_GRAPH_REFRESH_REVSOLVER=0
 * THOTH_GRAPH_REFRESH_SECURITY=0
-
+* THOTH_GRAPH_REFRESH_COUNT=<GraphDatabase.DEFAULT_COUNT> (This restricts the number of messages per solver for solver messages and the total number of messages generated for security and revsolver.)
 
 Insights to graph-refresh job
 =============================
