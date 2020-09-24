@@ -477,3 +477,7 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 ## Release 0.2.3 (2020-09-24T16:28:37)
 ### Automatic Updates
 * :pushpin: Automatic update of dependency thoth-common from 0.19.0 to 0.20.0
+
+## Release 0.2.4 (2020-09-24T17:50:16)
+### Features
+* Make app.sh executable (#506)
