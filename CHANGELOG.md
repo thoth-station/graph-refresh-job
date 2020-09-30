@@ -481,3 +481,8 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 ## Release 0.2.4 (2020-09-24T17:50:16)
 ### Features
 * Make app.sh executable (#506)
+
+## Release 0.2.5 (2020-09-30T17:37:26)
+### Automatic Updates
+* :pushpin: Automatic update of dependency thoth-messaging from 0.7.6 to 0.7.8 (#511)
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.11 to 0.25.13 (#510)
