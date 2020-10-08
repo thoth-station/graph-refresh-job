@@ -491,3 +491,10 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 ### Automatic Updates
 * :pushpin: Automatic update of dependency thoth-messaging from 0.7.8 to 0.7.9 (#516)
 * :pushpin: Automatic update of dependency thoth-storages from 0.25.13 to 0.25.14 (#515)
+
+## Release 0.2.7 (2020-10-08T13:01:50)
+### Features
+* Messages sent metrics (#521)
+### Automatic Updates
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.14 to 0.25.15 (#524)
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.14 to 0.25.15 (#523)
