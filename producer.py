@@ -28,7 +28,7 @@ import asyncio
 
 from thoth.common import init_logging
 from thoth.common import OpenShift
-from prometheus_client import CollectorRegistry, Gauge, Counter
+from prometheus_client import CollectorRegistry, Gauge, Counter, push_to_gateway
 
 from thoth.messaging import MessageBase
 from thoth.messaging.unresolved_package import UnresolvedPackageMessage
@@ -57,6 +57,8 @@ _OPENSHIFT = OpenShift()
 
 prometheus_registry = CollectorRegistry()
 THOTH_MY_NAMESPACE = os.getenv("NAMESPACE")
+_THOTH_METRICS_PUSHGATEWAY_URL = os.getenv("PROMETHEUS_PUSHGATEWAY_URL")
+
 # Conditional scheduling, by default we schedule everything.
 THOTH_GRAPH_REFRESH_SOLVER = int(os.getenv("THOTH_GRAPH_REFRESH_SOLVER", 1))
 _LOGGER.info("Schedule Solver Messages set to - %r", THOTH_GRAPH_REFRESH_SOLVER)
@@ -88,9 +90,8 @@ _METRIC_MESSSAGES_SENT = Counter(
 _METRIC_INFO.labels(THOTH_MY_NAMESPACE, __service_version__).inc()
 
 
-def _unsolved_packages(indexes: list) -> list:
+def _unsolved_packages(packages: list) -> list:
     """Find packages that are not solved."""
-    packages: list = []
     # Iterate over all registered solvers and gather packages which were not solved by them. Shuffle solvers
     # not to block a solver on another one.
     solver_names = _OPENSHIFT.get_solver_names()
@@ -121,32 +122,29 @@ def _unsolved_packages(indexes: list) -> list:
 @app.command()
 async def main() -> None:
     """Produce Kafka messages depending on the knowledge that needs to be acquired for a certain package."""
+    # Start here not to be overwritten by Faust App
+    init_logging()
+
     if _COUNT:
         _LOGGER.info(
-            "Graph refresh will produce at most %d messages per each category of messages.", _COUNT
+            "Graph refresh will produce at most %d messages per each category of messages.",
+            _COUNT,
         )
 
         factor = 0
         if THOTH_GRAPH_REFRESH_SOLVER:
-            _LOGGER.info(
-                "UnresolvedPackageMessage messages will be sent!"
-            )
+            _LOGGER.info("UnresolvedPackageMessage messages will be sent!")
             factor += 1
 
         if THOTH_GRAPH_REFRESH_REVSOLVER:
-            _LOGGER.info(
-                "UnrevsolvedPackageMessage messages will be sent!"
-            )
+            _LOGGER.info("UnrevsolvedPackageMessage messages will be sent!")
             factor += 1
 
         if THOTH_GRAPH_REFRESH_SECURITY:
-            _LOGGER.info(
-                "SIUnanalyzedPackageMessage messages will be sent!"
-            )
+            _LOGGER.info("SIUnanalyzedPackageMessage messages will be sent!")
             factor += 1
 
-        max_messages_sent = _COUNT*factor
-
+        max_messages_sent = _COUNT * factor
 
     if not max_messages_sent:
         _LOGGER.info("All messages for Graph-refresh-job are disabled.")
@@ -165,8 +163,7 @@ async def main() -> None:
 
     # We dont fetch unsolved packages if both solver and revsolver messages are disabled.
     if THOTH_GRAPH_REFRESH_SOLVER or THOTH_GRAPH_REFRESH_REVSOLVER:
-        indexes = _GRAPH_DB.get_python_package_index_urls_all()
-        packages = _unsolved_packages(indexes)
+        packages = _unsolved_packages(packages=packages)
 
     if not packages:
         _LOGGER.info("No unsolved packages found")
@@ -272,9 +269,23 @@ async def main() -> None:
                     identifier,
                 )
 
-    _METRIC_MESSSAGES_SENT.labels(message_type=UnresolvedPackageMessage.name, THOTH_MY_NAMESPACE, __service_version__).inc(solver_messages_sent)
-    _METRIC_MESSSAGES_SENT.labels(message_type=UnrevsolvedPackageMessage.name, THOTH_MY_NAMESPACE, __service_version__).inc(revsolver_messages_sent)
-    _METRIC_MESSSAGES_SENT.labels(message_type=SIUnanalyzedPackageMessage.name, THOTH_MY_NAMESPACE, __service_version__).inc(security_messages_sent)
+    _METRIC_MESSSAGES_SENT.labels(
+        message_type=UnresolvedPackageMessage.name,
+        env=THOTH_MY_NAMESPACE,
+        version=__service_version__,
+    ).inc(solver_messages_sent)
+
+    _METRIC_MESSSAGES_SENT.labels(
+        message_type=UnrevsolvedPackageMessage.name,
+        env=THOTH_MY_NAMESPACE,
+        version=__service_version__,
+    ).inc(revsolver_messages_sent)
+
+    _METRIC_MESSSAGES_SENT.labels(
+        message_type=SIUnanalyzedPackageMessage.name,
+        env=THOTH_MY_NAMESPACE,
+        version=__service_version__,
+    ).inc(security_messages_sent)
 
     if _THOTH_METRICS_PUSHGATEWAY_URL:
         try:
