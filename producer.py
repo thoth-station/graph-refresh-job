@@ -28,7 +28,7 @@ import asyncio
 
 from thoth.common import init_logging
 from thoth.common import OpenShift
-from prometheus_client import CollectorRegistry, Gauge
+from prometheus_client import CollectorRegistry, Gauge, Counter
 
 from thoth.messaging import MessageBase
 from thoth.messaging.unresolved_package import UnresolvedPackageMessage
@@ -47,7 +47,6 @@ _LOGGER.info("Thoth graph refresh producer v%s", __service_version__)
 
 app = MessageBase().app
 
-init_logging()
 _GRAPH_DB = GraphDatabase()
 _GRAPH_DB.connect()
 _COUNT = (
@@ -74,10 +73,18 @@ COMPONENT_NAME = "graph-refresh-job"
 # Metrics Exporter Metrics
 _METRIC_INFO = Gauge(
     "thoth_graph_refresh_job_info",
-    "Thoth Graph Refresh Job information",
+    "Thoth Graph Refresh Producer information",
     ["env", "version"],
     registry=prometheus_registry,
 )
+
+_METRIC_MESSSAGES_SENT = Counter(
+    "thoth_graph_refresh_job_messages_sent",
+    "Thoth Graph Refresh Producer information sent",
+    ["message_type", "env", "version"],
+    registry=prometheus_registry,
+)
+
 _METRIC_INFO.labels(THOTH_MY_NAMESPACE, __service_version__).inc()
 
 
@@ -116,19 +123,45 @@ async def main() -> None:
     """Produce Kafka messages depending on the knowledge that needs to be acquired for a certain package."""
     if _COUNT:
         _LOGGER.info(
-            "Graph refresh will produce at most %d messages per solver.", _COUNT
+            "Graph refresh will produce at most %d messages per each category of messages.", _COUNT
+        )
+
+        factor = 0
+        if THOTH_GRAPH_REFRESH_SOLVER:
+            _LOGGER.info(
+                "UnresolvedPackageMessage messages will be sent!"
+            )
+            factor += 1
+
+        if THOTH_GRAPH_REFRESH_REVSOLVER:
+            _LOGGER.info(
+                "UnrevsolvedPackageMessage messages will be sent!"
+            )
+            factor += 1
+
+        if THOTH_GRAPH_REFRESH_SECURITY:
+            _LOGGER.info(
+                "SIUnanalyzedPackageMessage messages will be sent!"
+            )
+            factor += 1
+
+        max_messages_sent = _COUNT*factor
+
+
+    if not max_messages_sent:
+        _LOGGER.info("All messages for Graph-refresh-job are disabled.")
+        return
+
+    else:
+        _LOGGER.info(
+            "Graph refresh will produce at most %d messages ", max_messages_sent
         )
 
     packages: list = []
-    if not any(
-        [
-            THOTH_GRAPH_REFRESH_SOLVER,
-            THOTH_GRAPH_REFRESH_REVSOLVER,
-            THOTH_GRAPH_REFRESH_SECURITY,
-        ]
-    ):
-        _LOGGER.info("All messages for Graph-refresh-job are disabled.")
-        return
+
+    solver_messages_sent = 0
+    revsolver_messages_sent = 0
+    security_messages_sent = 0
 
     # We dont fetch unsolved packages if both solver and revsolver messages are disabled.
     if THOTH_GRAPH_REFRESH_SOLVER or THOTH_GRAPH_REFRESH_REVSOLVER:
@@ -173,6 +206,7 @@ async def main() -> None:
                         package_version,
                         index_url,
                     )
+                    solver_messages_sent += 1
                 except Exception as identifier:
                     _LOGGER.exception(
                         "Failed to publish solver message with the following error message: %r",
@@ -198,6 +232,7 @@ async def main() -> None:
                         package_name,
                         package_version,
                     )
+                    revsolver_messages_sent += 1
                     revsolver_packages_seen.add((package_name, package_version))
                 except Exception as identifier:
                     _LOGGER.exception(
@@ -230,11 +265,29 @@ async def main() -> None:
                     package_version,
                     index_url,
                 )
+                security_messages_sent += 1
             except Exception as identifier:
                 _LOGGER.exception(
                     "Failed to publish SI unanalyzed package message with the following error message: %r",
                     identifier,
                 )
+
+    _METRIC_MESSSAGES_SENT.labels(message_type=UnresolvedPackageMessage.name, THOTH_MY_NAMESPACE, __service_version__).inc(solver_messages_sent)
+    _METRIC_MESSSAGES_SENT.labels(message_type=UnrevsolvedPackageMessage.name, THOTH_MY_NAMESPACE, __service_version__).inc(revsolver_messages_sent)
+    _METRIC_MESSSAGES_SENT.labels(message_type=SIUnanalyzedPackageMessage.name, THOTH_MY_NAMESPACE, __service_version__).inc(security_messages_sent)
+
+    if _THOTH_METRICS_PUSHGATEWAY_URL:
+        try:
+            _LOGGER.debug(
+                f"Submitting metrics to Prometheus pushgateway {_THOTH_METRICS_PUSHGATEWAY_URL}"
+            )
+            push_to_gateway(
+                _THOTH_METRICS_PUSHGATEWAY_URL,
+                job="graph-refresh",
+                registry=prometheus_registry,
+            )
+        except Exception as e:
+            _LOGGER.exception(f"An error occurred pushing the metrics: {str(e)}")
 
     # Finally gather all the async co-routines
     await asyncio.gather(*async_tasks)
