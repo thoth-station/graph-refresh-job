@@ -163,6 +163,7 @@ async def main() -> None:
 
     # We dont fetch unsolved packages if both solver and revsolver messages are disabled.
     if THOTH_GRAPH_REFRESH_SOLVER or THOTH_GRAPH_REFRESH_REVSOLVER:
+        indexes = _GRAPH_DB.get_python_package_index_urls_all()
         packages = _unsolved_packages(packages=packages)
 
     if not packages:
@@ -270,19 +271,19 @@ async def main() -> None:
                 )
 
     _METRIC_MESSSAGES_SENT.labels(
-        message_type=UnresolvedPackageMessage.name,
+        message_type=UnresolvedPackageMessage.topic_name,
         env=THOTH_MY_NAMESPACE,
         version=__service_version__,
     ).inc(solver_messages_sent)
 
     _METRIC_MESSSAGES_SENT.labels(
-        message_type=UnrevsolvedPackageMessage.name,
+        message_type=UnrevsolvedPackageMessage.topic_name,
         env=THOTH_MY_NAMESPACE,
         version=__service_version__,
     ).inc(revsolver_messages_sent)
 
     _METRIC_MESSSAGES_SENT.labels(
-        message_type=SIUnanalyzedPackageMessage.name,
+        message_type=SIUnanalyzedPackageMessage.topic_name,
         env=THOTH_MY_NAMESPACE,
         version=__service_version__,
     ).inc(security_messages_sent)
