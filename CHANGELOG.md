@@ -506,3 +506,11 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 * :pushpin: Automatic update of dependency thoth-messaging from 0.7.9 to 0.7.11 (#529)
 * :pushpin: Automatic update of dependency thoth-messaging from 0.7.9 to 0.7.11 (#528)
 * :pushpin: Automatic update of dependency thoth-messaging from 0.7.9 to 0.7.11 (#527)
+
+## Release 0.2.9 (2020-11-10T19:33:13)
+### Features
+* Locked thoth-messaging (#534)
+### Automatic Updates
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.15 to 0.26.0 (#538)
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.15 to 0.26.0 (#537)
+* :pushpin: Automatic update of dependency thoth-common from 0.20.1 to 0.20.4 (#536)
