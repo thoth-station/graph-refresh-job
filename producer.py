@@ -24,13 +24,12 @@ which decide which workflows need to run to acquire that knowledge.
 import logging
 import random
 import os
-import asyncio
 
 from thoth.common import init_logging
 from thoth.common import OpenShift
 from prometheus_client import CollectorRegistry, Gauge, Counter, push_to_gateway
 
-from thoth.messaging import MessageBase
+import thoth.messaging.producer as producer
 from thoth.messaging.unresolved_package import UnresolvedPackageMessage
 from thoth.messaging.unrevsolved_package import UnrevsolvedPackageMessage
 from thoth.messaging.si_unanalyzed_package import SIUnanalyzedPackageMessage
@@ -40,12 +39,14 @@ from thoth.messaging import __version__ as __messaging__version__
 from thoth.storages import GraphDatabase
 from version import __version__
 
+init_logging()
+
 __service_version__ = f"{__version__}+storage.{__storage__version__}.common.{__common__version__}.messaging.{__messaging__version__}"  # noqa: E501
 
 _LOGGER = logging.getLogger("thoth.graph_refresh_job")
 _LOGGER.info("Thoth graph refresh producer v%s", __service_version__)
 
-app = MessageBase().app
+p = producer.create_producer()
 
 _GRAPH_DB = GraphDatabase()
 _GRAPH_DB.connect()
@@ -119,11 +120,8 @@ def _unsolved_packages(packages: list) -> list:
     return packages
 
 
-@app.command()
-async def main() -> None:
+def main() -> None:
     """Produce Kafka messages depending on the knowledge that needs to be acquired for a certain package."""
-    # Start here not to be overwritten by Faust App
-    init_logging()
 
     if _COUNT:
         _LOGGER.info(
@@ -173,7 +171,6 @@ async def main() -> None:
     random.shuffle(packages)
 
     revsolver_packages_seen = set()
-    async_tasks = []
     # Class for solver messages
     unresolved_package = UnresolvedPackageMessage()
     # Class for reverse solver messages
@@ -185,18 +182,14 @@ async def main() -> None:
         if THOTH_GRAPH_REFRESH_SOLVER:
             for index_url in [index_url] if index_url is not None else indexes:
                 try:
-                    async_tasks.append(
-                        unresolved_package.publish_to_topic(
-                            unresolved_package.MessageContents(
-                                package_name=package_name,
-                                package_version=package_version,
-                                index_url=[index_url],
-                                solver=solver_name,
-                                component_name=COMPONENT_NAME,
-                                service_version=__service_version__,
-                            )
-                        )
-                    )
+                    producer.publish_to_topic(p, UnresolvedPackageMessage(), UnresolvedPackageMessage.MessageContents(
+                        package_name=package_name,
+                        package_version=package_version,
+                        index_url=[index_url],
+                        solver=solver_name,
+                        component_name=COMPONENT_NAME,
+                        service_version=__service_version__,
+                    ))
                     _LOGGER.info(
                         "Published message for solver %r for package %r in version %r from index %r",
                         solver_name,
@@ -215,16 +208,12 @@ async def main() -> None:
         if THOTH_GRAPH_REFRESH_REVSOLVER:
             if (package_name, package_version) not in revsolver_packages_seen:
                 try:
-                    async_tasks.append(
-                        unrevsolved_package.publish_to_topic(
-                            unrevsolved_package.MessageContents(
-                                package_name=package_name,
-                                package_version=package_version,
-                                component_name=COMPONENT_NAME,
-                                service_version=__service_version__,
-                            )
-                        )
-                    )
+                    producer.publish_to_topic(p, UnrevsolvedPackageMessage, UnrevsolvedPackageMessage.MessageContents(
+                        package_name=package_name,
+                        package_version=package_version,
+                        component_name=COMPONENT_NAME,
+                        service_version=__service_version__,
+                    ))
                     _LOGGER.info(
                         "Published message for reverse solver message for package %r in version %r",
                         package_name,
@@ -246,17 +235,13 @@ async def main() -> None:
             index_url,
         ) in _GRAPH_DB.get_si_unanalyzed_python_package_versions_all(count=_COUNT):
             try:
-                async_tasks.append(
-                    si_unanalyzed_package.publish_to_topic(
-                        si_unanalyzed_package.MessageContents(
-                            package_name=package_name,
-                            package_version=package_version,
-                            index_url=index_url,
-                            component_name=COMPONENT_NAME,
-                            service_version=__service_version__,
-                        )
-                    )
-                )
+                producer.publish_to_topic(p, SIUnanalyzedPackageMessage, SIUnanalyzedPackageMessage.MessageContents(
+                    package_name=package_name,
+                    package_version=package_version,
+                    index_url=index_url,
+                    component_name=COMPONENT_NAME,
+                    service_version=__service_version__,
+                ))
                 _LOGGER.info(
                     "Published message for SI unanalyzed package message for package %r in version %r, index_url is %r",
                     package_name,
@@ -301,10 +286,6 @@ async def main() -> None:
         except Exception as e:
             _LOGGER.exception(f"An error occurred pushing the metrics: {str(e)}")
 
-    # Finally gather all the async co-routines
-    await asyncio.gather(*async_tasks)
-
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    main()
