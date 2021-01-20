@@ -514,3 +514,17 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 * :pushpin: Automatic update of dependency thoth-storages from 0.25.15 to 0.26.0 (#538)
 * :pushpin: Automatic update of dependency thoth-storages from 0.25.15 to 0.26.0 (#537)
 * :pushpin: Automatic update of dependency thoth-common from 0.20.1 to 0.20.4 (#536)
+
+## Release 0.3.0 (2021-01-20T19:43:36)
+### Features
+* add maintainer (#553)
+* Add schema metric (#550)
+* Adjust rebase error (#549)
+* update to latest messaging (#548)
+* Use deployment-name for metrics (#545)
+* :arrow_up: Automatic update of dependencies by kebechet. (#547)
+* update .thoth.yaml (#544)
+* port to python 38 (#543)
+* Updated pipfile lock with new storages (#542)
+### Improvements
+* removed bissenbay, thanks for your contributions!
