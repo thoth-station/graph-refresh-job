@@ -56,7 +56,7 @@ _COUNT = (
 _OPENSHIFT = OpenShift()
 
 prometheus_registry = CollectorRegistry()
-THOTH_MY_NAMESPACE = os.getenv("NAMESPACE")
+THOTH_DEPLOYMENT_NAME = os.getenv("THOTH_DEPLOYMENT_NAME")
 _THOTH_METRICS_PUSHGATEWAY_URL = os.getenv("PROMETHEUS_PUSHGATEWAY_URL")
 
 # Conditional scheduling, by default we schedule everything.
@@ -87,7 +87,7 @@ _METRIC_MESSSAGES_SENT = Counter(
     registry=prometheus_registry,
 )
 
-_METRIC_INFO.labels(THOTH_MY_NAMESPACE, __service_version__).inc()
+_METRIC_INFO.labels(THOTH_DEPLOYMENT_NAME, __service_version__).inc()
 
 
 def _unsolved_packages(packages: list) -> list:
@@ -272,19 +272,19 @@ async def main() -> None:
 
     _METRIC_MESSSAGES_SENT.labels(
         message_type=UnresolvedPackageMessage.topic_name,
-        env=THOTH_MY_NAMESPACE,
+        env=THOTH_DEPLOYMENT_NAME,
         version=__service_version__,
     ).inc(solver_messages_sent)
 
     _METRIC_MESSSAGES_SENT.labels(
         message_type=UnrevsolvedPackageMessage.topic_name,
-        env=THOTH_MY_NAMESPACE,
+        env=THOTH_DEPLOYMENT_NAME,
         version=__service_version__,
     ).inc(revsolver_messages_sent)
 
     _METRIC_MESSSAGES_SENT.labels(
         message_type=SIUnanalyzedPackageMessage.topic_name,
-        env=THOTH_MY_NAMESPACE,
+        env=THOTH_DEPLOYMENT_NAME,
         version=__service_version__,
     ).inc(security_messages_sent)
 
