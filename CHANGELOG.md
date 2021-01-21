@@ -528,3 +528,8 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 * Updated pipfile lock with new storages (#542)
 ### Improvements
 * removed bissenbay, thanks for your contributions!
+
+## Release 0.3.1 (2021-01-21T21:38:12)
+### Features
+* Correct base image (#558)
+* :arrow_up: Automatic update of dependencies by kebechet. (#556)
