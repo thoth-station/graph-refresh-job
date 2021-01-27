@@ -533,3 +533,10 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 ### Features
 * Correct base image (#558)
 * :arrow_up: Automatic update of dependencies by kebechet. (#556)
+
+## Release 0.3.2 (2021-01-27T14:06:32)
+### Features
+* :arrow_up: Automatic update of dependencies by kebechet. (#565)
+### Bug Fixes
+* fix the pre-commit issue in producer.py (#566)
+* Relock pipfile for typing_extension issue fix (#564)
