@@ -97,11 +97,8 @@ _METRIC_DATABASE_SCHEMA_SCRIPT = Gauge(
 
 _METRIC_INFO.labels(THOTH_DEPLOYMENT_NAME, __service_version__).inc()
 _METRIC_DATABASE_SCHEMA_SCRIPT.labels(
-    COMPONENT_NAME,
-    _GRAPH_DB.get_script_alembic_version_head(),
-    THOTH_DEPLOYMENT_NAME
+    COMPONENT_NAME, _GRAPH_DB.get_script_alembic_version_head(), THOTH_DEPLOYMENT_NAME
 ).inc()
-
 
 
 def _unsolved_packages(packages: list) -> list:
@@ -135,7 +132,6 @@ def _unsolved_packages(packages: list) -> list:
 
 def main() -> None:
     """Produce Kafka messages depending on the knowledge that needs to be acquired for a certain package."""
-
     if _COUNT:
         _LOGGER.info(
             "Graph refresh will produce at most %d messages per each category of messages.",
@@ -195,14 +191,18 @@ def main() -> None:
         if THOTH_GRAPH_REFRESH_SOLVER:
             for index_url in [index_url] if index_url is not None else indexes:
                 try:
-                    producer.publish_to_topic(p, UnresolvedPackageMessage(), UnresolvedPackageMessage.MessageContents(
-                        package_name=package_name,
-                        package_version=package_version,
-                        index_url=[index_url],
-                        solver=solver_name,
-                        component_name=COMPONENT_NAME,
-                        service_version=__service_version__,
-                    ))
+                    producer.publish_to_topic(
+                        p,
+                        unresolved_package,
+                        UnresolvedPackageMessage.MessageContents(
+                            package_name=package_name,
+                            package_version=package_version,
+                            index_url=[index_url],
+                            solver=solver_name,
+                            component_name=COMPONENT_NAME,
+                            service_version=__service_version__,
+                        ),
+                    )
                     _LOGGER.info(
                         "Published message for solver %r for package %r in version %r from index %r",
                         solver_name,
@@ -221,12 +221,16 @@ def main() -> None:
         if THOTH_GRAPH_REFRESH_REVSOLVER:
             if (package_name, package_version) not in revsolver_packages_seen:
                 try:
-                    producer.publish_to_topic(p, UnrevsolvedPackageMessage, UnrevsolvedPackageMessage.MessageContents(
-                        package_name=package_name,
-                        package_version=package_version,
-                        component_name=COMPONENT_NAME,
-                        service_version=__service_version__,
-                    ))
+                    producer.publish_to_topic(
+                        p,
+                        unrevsolved_package,
+                        UnrevsolvedPackageMessage.MessageContents(
+                            package_name=package_name,
+                            package_version=package_version,
+                            component_name=COMPONENT_NAME,
+                            service_version=__service_version__,
+                        ),
+                    )
                     _LOGGER.info(
                         "Published message for reverse solver message for package %r in version %r",
                         package_name,
@@ -248,13 +252,17 @@ def main() -> None:
             index_url,
         ) in _GRAPH_DB.get_si_unanalyzed_python_package_versions_all(count=_COUNT):
             try:
-                producer.publish_to_topic(p, SIUnanalyzedPackageMessage, SIUnanalyzedPackageMessage.MessageContents(
-                    package_name=package_name,
-                    package_version=package_version,
-                    index_url=index_url,
-                    component_name=COMPONENT_NAME,
-                    service_version=__service_version__,
-                ))
+                producer.publish_to_topic(
+                    p,
+                    si_unanalyzed_package,
+                    SIUnanalyzedPackageMessage.MessageContents(
+                        package_name=package_name,
+                        package_version=package_version,
+                        index_url=index_url,
+                        component_name=COMPONENT_NAME,
+                        service_version=__service_version__,
+                    ),
+                )
                 _LOGGER.info(
                     "Published message for SI unanalyzed package message for package %r in version %r, index_url is %r",
                     package_name,
