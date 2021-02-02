@@ -540,3 +540,7 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 ### Bug Fixes
 * fix the pre-commit issue in producer.py (#566)
 * Relock pipfile for typing_extension issue fix (#564)
+
+## Release 0.3.3 (2021-02-02T19:15:43)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet (#571)
