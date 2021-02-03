@@ -277,19 +277,19 @@ def main() -> None:
                 )
 
     _METRIC_MESSSAGES_SENT.labels(
-        message_type=UnresolvedPackageMessage.topic_name,
+        message_type=UnresolvedPackageMessage().topic_name,
         env=THOTH_DEPLOYMENT_NAME,
         version=__service_version__,
     ).inc(solver_messages_sent)
 
     _METRIC_MESSSAGES_SENT.labels(
-        message_type=UnrevsolvedPackageMessage.topic_name,
+        message_type=UnrevsolvedPackageMessage().topic_name,
         env=THOTH_DEPLOYMENT_NAME,
         version=__service_version__,
     ).inc(revsolver_messages_sent)
 
     _METRIC_MESSSAGES_SENT.labels(
-        message_type=SIUnanalyzedPackageMessage.topic_name,
+        message_type=SIUnanalyzedPackageMessage().topic_name,
         env=THOTH_DEPLOYMENT_NAME,
         version=__service_version__,
     ).inc(security_messages_sent)
