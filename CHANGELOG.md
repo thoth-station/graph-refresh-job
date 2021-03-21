@@ -544,3 +544,11 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 ## Release 0.3.3 (2021-02-02T19:15:43)
 ### Features
 * :arrow_up: Automatic update of dependencies by Kebechet (#571)
+
+## Release 0.3.4 (2021-03-21T17:54:01)
+### Features
+* configure ci/cd prow on the app and updated pre-commit
+* :arrow_up: Automatic update of dependencies by Kebechet (#579)
+* Adjust label metrics (#577)
+* :arrow_up: Automatic update of dependencies by Kebechet (#576)
+* Add Kebechet templates
