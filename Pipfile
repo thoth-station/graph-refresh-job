@@ -7,7 +7,7 @@ name = "pypi"
 thoth-common = "*"
 thoth-storages = "*"
 prometheus-client = "*"
-thoth-messaging = "*"
+thoth-messaging = "<=0.13"
 
 [dev-packages]
 coala = "*"
