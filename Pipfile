@@ -7,13 +7,14 @@ name = "pypi"
 thoth-common = "*"
 thoth-storages = "*"
 prometheus-client = "*"
-thoth-messaging = "<=0.13"
+thoth-messaging = "*"
 
 [dev-packages]
 coala = "*"
 pycodestylebear = "*"
 yamllintbear = "*"
 pydocstylebear = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.8"
