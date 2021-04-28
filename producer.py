@@ -30,9 +30,20 @@ from thoth.common import OpenShift
 from prometheus_client import CollectorRegistry, Gauge, Counter, push_to_gateway
 
 import thoth.messaging.producer as producer
-from thoth.messaging.unresolved_package import UnresolvedPackageMessage
-from thoth.messaging.unrevsolved_package import UnrevsolvedPackageMessage
-from thoth.messaging.si_unanalyzed_package import SIUnanalyzedPackageMessage
+from thoth.messaging import (
+    unresolved_package_message,
+    unrevsolved_package_message,
+    si_unanalyzed_package_message,
+)
+from thoth.messaging.unresolved_package import (
+    MessageContents as UnresolvedPackageContents,
+)
+from thoth.messaging.unrevsolved_package import (
+    MessageContents as UnrevsolvedPackageContents,
+)
+from thoth.messaging.si_unanalyzed_package import (
+    MessageContents as SIUnanalyzedPackageContents,
+)
 from thoth.common import __version__ as __common__version__
 from thoth.storages import __version__ as __storage__version__
 from thoth.messaging import __version__ as __messaging__version__
@@ -140,15 +151,15 @@ def main() -> None:
 
         factor = 0
         if THOTH_GRAPH_REFRESH_SOLVER:
-            _LOGGER.info("UnresolvedPackageMessage messages will be sent!")
+            _LOGGER.info("unresolved_package_message messages will be sent!")
             factor += 1
 
         if THOTH_GRAPH_REFRESH_REVSOLVER:
-            _LOGGER.info("UnrevsolvedPackageMessage messages will be sent!")
+            _LOGGER.info("unrevsolved_package_message messages will be sent!")
             factor += 1
 
         if THOTH_GRAPH_REFRESH_SECURITY:
-            _LOGGER.info("SIUnanalyzedPackageMessage messages will be sent!")
+            _LOGGER.info("si_unanalyzed_package messages will be sent!")
             factor += 1
 
         max_messages_sent = _COUNT * factor
@@ -180,12 +191,6 @@ def main() -> None:
     random.shuffle(packages)
 
     revsolver_packages_seen = set()
-    # Class for solver messages
-    unresolved_package = UnresolvedPackageMessage()
-    # Class for reverse solver messages
-    unrevsolved_package = UnrevsolvedPackageMessage()
-    # Class for SI Unanalyzed package messages
-    si_unanalyzed_package = SIUnanalyzedPackageMessage()
 
     for package_name, package_version, index_url, solver_name in packages:
         if THOTH_GRAPH_REFRESH_SOLVER:
@@ -193,8 +198,8 @@ def main() -> None:
                 try:
                     producer.publish_to_topic(
                         p,
-                        unresolved_package,
-                        UnresolvedPackageMessage.MessageContents(
+                        unresolved_package_message,
+                        UnresolvedPackageContents(
                             package_name=package_name,
                             package_version=package_version,
                             index_url=[index_url],
@@ -223,8 +228,8 @@ def main() -> None:
                 try:
                     producer.publish_to_topic(
                         p,
-                        unrevsolved_package,
-                        UnrevsolvedPackageMessage.MessageContents(
+                        unrevsolved_package_message,
+                        UnrevsolvedPackageContents(
                             package_name=package_name,
                             package_version=package_version,
                             component_name=COMPONENT_NAME,
@@ -254,8 +259,8 @@ def main() -> None:
             try:
                 producer.publish_to_topic(
                     p,
-                    si_unanalyzed_package,
-                    SIUnanalyzedPackageMessage.MessageContents(
+                    si_unanalyzed_package_message,
+                    SIUnanalyzedPackageContents(
                         package_name=package_name,
                         package_version=package_version,
                         index_url=index_url,
@@ -277,19 +282,19 @@ def main() -> None:
                 )
 
     _METRIC_MESSSAGES_SENT.labels(
-        message_type=UnresolvedPackageMessage().topic_name,
+        message_type=unresolved_package_message.topic_name,
         env=THOTH_DEPLOYMENT_NAME,
         version=__service_version__,
     ).inc(solver_messages_sent)
 
     _METRIC_MESSSAGES_SENT.labels(
-        message_type=UnrevsolvedPackageMessage().topic_name,
+        message_type=unrevsolved_package_message.topic_name,
         env=THOTH_DEPLOYMENT_NAME,
         version=__service_version__,
     ).inc(revsolver_messages_sent)
 
     _METRIC_MESSSAGES_SENT.labels(
-        message_type=SIUnanalyzedPackageMessage().topic_name,
+        message_type=si_unanalyzed_package_message.topic_name,
         env=THOTH_DEPLOYMENT_NAME,
         version=__service_version__,
     ).inc(security_messages_sent)
