@@ -552,3 +552,9 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 * Adjust label metrics (#577)
 * :arrow_up: Automatic update of dependencies by Kebechet (#576)
 * Add Kebechet templates
+
+## Release 0.3.5 (2021-05-02T23:00:45)
+### Features
+* constrain thoth-messaging (#582)
+### Improvements
+* use thoth-messaging >=0.14 (#583)
