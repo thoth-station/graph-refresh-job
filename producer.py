@@ -280,6 +280,7 @@ def main() -> None:
                     "Failed to publish SI unanalyzed package message with the following error message: %r",
                     identifier,
                 )
+    p.flush()
 
     _METRIC_MESSSAGES_SENT.labels(
         message_type=unresolved_package_message.topic_name,
