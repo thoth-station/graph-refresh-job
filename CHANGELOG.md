@@ -558,3 +558,8 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 * constrain thoth-messaging (#582)
 ### Improvements
 * use thoth-messaging >=0.14 (#583)
+
+## Release 0.3.6 (2021-05-17T08:11:41)
+### Features
+* flush all pending messages (#593)
+* :arrow_up: Automatic update of dependencies by Kebechet (#592)
