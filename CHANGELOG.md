@@ -563,3 +563,9 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 ### Features
 * flush all pending messages (#593)
 * :arrow_up: Automatic update of dependencies by Kebechet (#592)
+
+## Release 0.3.7 (2021-06-03T17:35:39)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet
+* :arrow_up: Automatic update of dependencies by Kebechet
+* :hatched_chick: update the prow resource limits (#597)
