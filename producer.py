@@ -202,7 +202,7 @@ def main() -> None:
                         UnresolvedPackageContents(
                             package_name=package_name,
                             package_version=package_version,
-                            index_url=[index_url],
+                            index_url=index_url,
                             solver=solver_name,
                             component_name=COMPONENT_NAME,
                             service_version=__service_version__,
