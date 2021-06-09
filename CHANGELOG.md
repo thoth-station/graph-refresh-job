@@ -569,3 +569,10 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 * :arrow_up: Automatic update of dependencies by Kebechet
 * :arrow_up: Automatic update of dependencies by Kebechet
 * :hatched_chick: update the prow resource limits (#597)
+
+## Release 0.3.8 (2021-06-09T12:00:24)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet
+* :arrow_up: Automatic update of dependencies by Kebechet
+### Improvements
+* make index singular
