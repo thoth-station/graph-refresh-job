@@ -576,3 +576,7 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 * :arrow_up: Automatic update of dependencies by Kebechet
 ### Improvements
 * make index singular
+
+## Release 0.3.9 (2021-06-14T15:00:24)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet
