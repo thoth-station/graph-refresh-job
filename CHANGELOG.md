@@ -588,3 +588,7 @@ Set resource limits of BuildConfig and Deployment to reasonable values, this wil
 ## Release 0.3.11 (2021-07-02T06:40:28)
 ### Features
 * :arrow_up: Automatic update of dependencies by Kebechet
+
+## Release 0.3.12 (2021-07-30T10:14:28)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet
