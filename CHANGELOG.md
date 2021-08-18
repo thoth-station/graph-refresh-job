@@ -1,5 +1,9 @@
 # Changelog for Thoth's Graph Refresh Job
 
+## Release 0.3.13 (2021-08-18T10:26:32)
+### Features
+* Update dependencies
+
 ## [0.4.0] - 2018-Jul-02 - goern
 
 ### Added
