@@ -1,5 +1,10 @@
 # Changelog for Thoth's Graph Refresh Job
 
+## Release 0.3.14 (2021-09-14T21:23:18)
+### Features
+* Add harshad as a maintainer
+* Update of the dependencies
+
 ## Release 0.3.13 (2021-08-18T10:26:32)
 ### Features
 * Update dependencies
