@@ -1,5 +1,9 @@
 # Changelog for Thoth's Graph Refresh Job
 
+## Release 0.3.15 (2021-09-23T08:25:47)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
+
 ## Release 0.3.14 (2021-09-14T21:23:18)
 ### Features
 * Add harshad as a maintainer
