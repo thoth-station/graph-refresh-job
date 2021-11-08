@@ -1,5 +1,8 @@
 # Changelog for Thoth's Graph Refresh Job
 
+## Release 0.3.16 (2021-11-08T12:05:18)
+* :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
+
 ## Release 0.3.15 (2021-09-23T08:25:47)
 ### Features
 * :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
