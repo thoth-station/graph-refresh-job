@@ -1,5 +1,10 @@
 # Changelog for Thoth's Graph Refresh Job
 
+## Release 0.3.18 (2022-01-31T21:49:53)
+* :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
+* :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
+* Enable TLS verification
+
 ## Release 0.3.17 (2021-12-24T16:15:47)
 * :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment (#659)
 * :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment

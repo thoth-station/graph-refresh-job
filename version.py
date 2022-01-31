@@ -17,4 +17,4 @@
 
 """This file carries the version of the graph refresh job."""
 
-__version__ = "0.3.17"
+__version__ = "0.3.18"
