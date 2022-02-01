@@ -1,5 +1,13 @@
-thoth-graph-refresh-job
+Thoth Graph Refresh Job
 -----------------------
+
+.. image:: https://img.shields.io/github/v/tag/thoth-station/graph-refresh-job?style=plastic
+  :target: https://github.com/thoth-station/graph-refresh-job/tags
+  :alt: GitHub tag (latest by date)
+
+.. image:: https://quay.io/repository/thoth-station/graph-refresh-job/status
+  :target: https://quay.io/repository/thoth-station/graph-refresh-job?tab=tags
+  :alt: Quay - Build
 
 A job for scheduling solver to resolve dependency graphs and package-analyzer to gather digests and ABI of new packages or packages not analyzed yet.
 
