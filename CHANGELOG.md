@@ -1,5 +1,12 @@
 # Changelog for Thoth's Graph Refresh Job
 
+## Release 0.3.19 (2022-05-09T19:36:49)
+* b6536a6 :ship: Bump up base image initialized in CI. (#675)
+* 8f0136d :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment (#674)
+* d06965a :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
+* 974cb54 :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
+* 01364aa :medal_sports: set badges for easy access to content
+
 ## Release 0.3.18 (2022-01-31T21:49:53)
 * :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
 * :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
