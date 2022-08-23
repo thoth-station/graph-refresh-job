@@ -1,5 +1,13 @@
 # Changelog for Thoth's Graph Refresh Job
 
+## Release 0.3.20 (2022-08-23T02:55:58)
+* 6a083d3 :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment (#685)
+* 99851a1 :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
+* 8d624cd :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment (#681)
+* 919bc56 Upgrade pre-commit image version (#682)
+* 963b8de :arrow_up: ci config updates
+* b26d8e6 :ship: Bump up base image initialized in CI. (#678)
+
 ## Release 0.3.19 (2022-05-09T19:36:49)
 * b6536a6 :ship: Bump up base image initialized in CI. (#675)
 * 8f0136d :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment (#674)
