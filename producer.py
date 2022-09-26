@@ -61,9 +61,7 @@ p = producer.create_producer()
 
 _GRAPH_DB = GraphDatabase()
 _GRAPH_DB.connect()
-_COUNT = (
-    int(os.getenv("THOTH_GRAPH_REFRESH_COUNT", GraphDatabase.DEFAULT_COUNT)) or None
-)
+_COUNT = int(os.getenv("THOTH_GRAPH_REFRESH_COUNT", GraphDatabase.DEFAULT_COUNT)) or None
 
 _OPENSHIFT = OpenShift()
 
@@ -75,13 +73,9 @@ _THOTH_METRICS_PUSHGATEWAY_URL = os.getenv("PROMETHEUS_PUSHGATEWAY_URL")
 THOTH_GRAPH_REFRESH_SOLVER = int(os.getenv("THOTH_GRAPH_REFRESH_SOLVER", 1))
 _LOGGER.info("Schedule Solver Messages set to - %r", THOTH_GRAPH_REFRESH_SOLVER)
 THOTH_GRAPH_REFRESH_REVSOLVER = int(os.getenv("THOTH_GRAPH_REFRESH_REVSOLVER", 1))
-_LOGGER.info(
-    "Schedule Reverse Solver Messages set to - %r", THOTH_GRAPH_REFRESH_REVSOLVER
-)
+_LOGGER.info("Schedule Reverse Solver Messages set to - %r", THOTH_GRAPH_REFRESH_REVSOLVER)
 THOTH_GRAPH_REFRESH_SECURITY = int(os.getenv("THOTH_GRAPH_REFRESH_SECURITY", 1))
-_LOGGER.info(
-    "Schedule Unanalyzed SI Messages set to - %r", THOTH_GRAPH_REFRESH_SECURITY
-)
+_LOGGER.info("Schedule Unanalyzed SI Messages set to - %r", THOTH_GRAPH_REFRESH_SECURITY)
 COMPONENT_NAME = "graph-refresh-job"
 
 # Metrics Exporter Metrics
@@ -121,11 +115,7 @@ def _unsolved_packages(packages: list) -> list:
     for solver_name in solver_names:
         _LOGGER.info("Checking unsolved packages for solver %r", solver_name)
         solver_info = _OPENSHIFT.parse_python_solver_name(solver_name)
-        for (
-            package_name,
-            version,
-            index_url,
-        ) in _GRAPH_DB.get_unsolved_python_package_versions_all(
+        for (package_name, version, index_url,) in _GRAPH_DB.get_unsolved_python_package_versions_all(
             os_name=solver_info["os_name"],
             os_version=solver_info["os_version"],
             python_version=solver_info["python_version"],
@@ -169,9 +159,7 @@ def main() -> None:
         return
 
     else:
-        _LOGGER.info(
-            "Graph refresh will produce at most %d messages ", max_messages_sent
-        )
+        _LOGGER.info("Graph refresh will produce at most %d messages ", max_messages_sent)
 
     packages: list = []
 
@@ -302,9 +290,7 @@ def main() -> None:
 
     if _THOTH_METRICS_PUSHGATEWAY_URL:
         try:
-            _LOGGER.debug(
-                f"Submitting metrics to Prometheus pushgateway {_THOTH_METRICS_PUSHGATEWAY_URL}"
-            )
+            _LOGGER.debug(f"Submitting metrics to Prometheus pushgateway {_THOTH_METRICS_PUSHGATEWAY_URL}")
             push_to_gateway(
                 _THOTH_METRICS_PUSHGATEWAY_URL,
                 job="graph-refresh",
