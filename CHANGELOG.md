@@ -1,5 +1,12 @@
 # Changelog for Thoth's Graph Refresh Job
 
+## Release 0.3.22 (2023-01-18T21:32:41)
+* 1d28a88 ':arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment' (#702)
+* 7391bf0 :recycle: HouseKeeping: Updated pre-commit (#703)
+* 96b6f43 :ship: Bump up base image initialized in CI. (#700)
+* fd53cec :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
+* 90ec8e2 Use the pyproject.toml for mypy (#697)
+
 ## Release 0.3.21 (2022-09-21T19:46:14)
 * 80d0188 :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
 * a7783fe :ship: Bump up base image initialized in CI.
